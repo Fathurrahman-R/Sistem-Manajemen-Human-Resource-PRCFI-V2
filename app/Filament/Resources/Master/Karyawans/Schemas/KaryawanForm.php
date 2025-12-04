@@ -32,24 +32,28 @@ class KaryawanForm
                     ->schema([
                         Group::make()
                             ->schema([
-                                TextInput::make('nama_lengkap')
-                                    ->prefixIcon(Heroicon::Identification)
-                                    ->placeholder('John Doe')
-                                    ->required()->columnSpan(2),
-                                Radio::make('jenis_kelamin')
-                                    ->options(['Laki-laki' => 'Laki-laki', 'Perempuan' => 'Perempuan'])
-                                    ->required()->inline(),
                                 TextInput::make('npwp')
                                     ->prefixIcon(Heroicon::Scale)
                                     ->label('NPWP')
                                     ->validationAttribute('NPWP')
                                     ->placeholder('012.345.678.9-876.543')
                                     ->required(),
+                                TextInput::make('nama_lengkap')
+                                    ->prefixIcon(Heroicon::Identification)
+                                    ->placeholder('John Doe')
+                                    ->required(),
+                                Radio::make('jenis_kelamin')
+                                    ->options(['Laki-laki' => 'Laki-laki', 'Perempuan' => 'Perempuan'])
+                                    ->required()->inline(),
                                 TextInput::make('email')
                                     ->prefixIcon(Heroicon::Envelope)
                                     ->label('Alamat email')
                                     ->placeholder('myemail@example.com')
                                     ->email()
+                                    ->required(),
+                                TextInput::make('unit_kerja')
+                                    ->prefixIcon(Heroicon::Map)
+                                    ->placeholder('Pontianak')
                                     ->required(),
                                 TextInput::make('posisi')
                                     ->prefixIcon(Heroicon::ShieldCheck)
@@ -80,18 +84,7 @@ class KaryawanForm
                                         ->columnSpan(2),
                                     Select::make('riwayat_pendidikan')
                                         ->prefixIcon(Heroicon::BuildingLibrary)
-                                        ->options([
-                                            RiwayatPendidikan::SD->name => RiwayatPendidikan::SD->value,
-                                            RiwayatPendidikan::SMP->name => RiwayatPendidikan::SMP->value,
-                                            RiwayatPendidikan::SMA->name => RiwayatPendidikan::SMA->value,
-                                            RiwayatPendidikan::D1->name => RiwayatPendidikan::D1->value,
-                                            RiwayatPendidikan::D2->name => RiwayatPendidikan::D2->value,
-                                            RiwayatPendidikan::D3->name => RiwayatPendidikan::D3->value,
-                                            RiwayatPendidikan::D4->name => RiwayatPendidikan::D4->value,
-                                            RiwayatPendidikan::S1->name => RiwayatPendidikan::S1->value,
-                                            RiwayatPendidikan::S2->name => RiwayatPendidikan::S2->value,
-                                            RiwayatPendidikan::S3->name => RiwayatPendidikan::S3->value,
-                                        ])->native(false),
+                                        ->options(RiwayatPendidikan::class)->native(false),
                                 ])
                                     ->label('Riwayat pendidikan')
                                     ->columns(3)->columnSpan(2),
@@ -132,17 +125,8 @@ class KaryawanForm
                                 ])->columns(5)->columnSpan(2)->label('Status'),
                                 ToggleButtons::make('english_skill')
                                     ->required()
-                                    ->default(EnglishSkill::Low->value)
-                                    ->options([
-                                        EnglishSkill::Low->name => EnglishSkill::Low->value,
-                                        EnglishSkill::Medium->name => EnglishSkill::Medium->value,
-                                        EnglishSkill::High->name => EnglishSkill::High->value,
-                                    ])
-                                    ->colors([
-                                        EnglishSkill::High->value => 'success',
-                                        EnglishSkill::Medium->value => 'warning',
-                                        EnglishSkill::Low->value => 'danger',
-                                    ])->inline(),
+                                    ->default(EnglishSkill::Low)
+                                    ->options(EnglishSkill::class)->inline(),
                             ])->columns(3),
                         Section::make('Dokumen')
                             ->secondary()
