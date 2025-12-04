@@ -125,15 +125,15 @@ class CutiForm
                         ->downloadable()
                         ->openable()
                         ->previewable()
-                        ->getUploadedFileNameForStorageUsing(function ($file, $get) {
-                            $karyawan = Auth::user()->karyawan;
-                            $namaKaryawan = $karyawan ? str_replace(' ', '_', $karyawan->nama_lengkap) : 'Unknown';
-                            $keterangan = $get('keterangan') ? str_replace(' ', '_', substr($get('keterangan'), 0, 30)) : 'Cuti';
-                            $tanggal = now()->format('Ymd_His');
-                            $extension = $file->getClientOriginalExtension();
-
-                            return "{$namaKaryawan}_{$keterangan}_{$tanggal}.{$extension}";
-                        })
+//                        ->getUploadedFileNameForStorageUsing(function ($file, $get) {
+//                            $karyawan = Auth::user()->karyawan;
+//                            $namaKaryawan = $karyawan ? str_replace(' ', '_', $karyawan->nama_lengkap) : 'Unknown';
+//                            $keterangan = $get('keterangan') ? str_replace(' ', '_', substr($get('keterangan'), 0, 30)) : 'Cuti';
+//                            $tanggal = now()->format('Ymd_His');
+//                            $extension = $file->getClientOriginalExtension();
+//
+//                            return "{$namaKaryawan}_{$keterangan}_{$tanggal}.{$extension}";
+//                        })
                         ->disabled(function($record,$operation){
                             if($operation!=='create'){
                                 if ($record->status!==StatusPengajuan::Diajukan->value){

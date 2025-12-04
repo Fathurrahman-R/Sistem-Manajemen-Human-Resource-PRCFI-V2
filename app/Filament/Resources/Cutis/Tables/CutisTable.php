@@ -98,6 +98,8 @@ class CutisTable
                                 ->default('Pontianak')
                                 ->required(),
                             DatePicker::make('approved_date')
+                                ->native(false)
+                                ->displayFormat('d F Y')
                                 ->label('Tanggal Disetujui')
                                 ->default(now())
                                 ->required(),
@@ -209,22 +211,8 @@ class CutisTable
                     })
                     ->action(function (Cuti $record) {
                         // Hapus dokumen dan signature files (TANPA HAPUS RECORD)
-                        if ($record->file_path && Storage::disk('public')->exists($record->file_path)) {
-                            Storage::disk('public')->delete($record->file_path);
-                        }
-                        if ($record->signature_karyawan && Storage::disk('public')->exists($record->signature_karyawan)) {
-                            Storage::disk('public')->delete($record->signature_karyawan);
-                        }
-                        if ($record->signature_direktur && Storage::disk('public')->exists($record->signature_direktur)) {
-                            Storage::disk('public')->delete($record->signature_direktur);
-                        }
-
-                        // Update status ke ditolak dan clear paths
-                        $record->update([
-                            'file_path' => null,
-                            'signature_karyawan' => null,
-                            'signature_direktur' => null,
-                        ]);
+                        $service = app(\App\Services\CutiDocumentServiceNew::class);
+                        $service->cleanupAllDocuments($record, $record->file_path, $record->signature_karyawan, $record->signature_direktur, $record->lampiran);
                         $record->reject(Auth::user());
                     })
                     ->successNotificationTitle('Pengajuan cuti berhasil ditolak dan dokumen dihapus')
@@ -261,6 +249,10 @@ class CutisTable
                     ->disabled(fn($record)=>$record->status!==StatusPengajuan::Diajukan),
 //                    ->hidden(fn($record)=>$record->status!==StatusPengajuan::Diajukan),
                 DeleteAction::make()
+                    ->after(function(Cuti $record){
+                        $service = app(\App\Services\CutiDocumentServiceNew::class);
+                        $service->cleanupAllDocuments($record, $record->file_path, $record->signature_karyawan, $record->signature_direktur, $record->lampiran);
+                    })
                     ->button()
                     ->disabled(fn($record)=>$record->status!==StatusPengajuan::Diajukan),
 //                    ->hidden(fn($record)=>$record->status!==StatusPengajuan::Diajukan),

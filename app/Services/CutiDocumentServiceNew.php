@@ -283,5 +283,31 @@ class CutiDocumentServiceNew
 
         return $deletedCount;
     }
+    public function cleanupAllDocuments(Cuti $record, ?string $documentPath, ?string $karyawanSignature, ?string $direkturSignature, ?array $lampiran):void
+    {
+        if ($documentPath && Storage::disk('public')->exists($documentPath)) {
+            Storage::disk('public')->delete($documentPath);
+        }
+        if ($karyawanSignature && Storage::disk('public')->exists($karyawanSignature)) {
+            Storage::disk('public')->delete($karyawanSignature);
+        }
+        if ($direkturSignature && Storage::disk('public')->exists($direkturSignature)) {
+            Storage::disk('public')->delete($direkturSignature);
+        }
+        if ($lampiran)
+        {
+            foreach ($lampiran as $path) {
+                if ($path && Storage::disk('public')->exists($path)) {
+                    Storage::disk('public')->delete($path);
+                }
+            }
+        }
+        $record->update([
+            'file_path' => null,
+            'signature_karyawan' => null,
+            'signature_direktur' => null,
+            'lampiran' => null,
+        ]);
+    }
 }
 
