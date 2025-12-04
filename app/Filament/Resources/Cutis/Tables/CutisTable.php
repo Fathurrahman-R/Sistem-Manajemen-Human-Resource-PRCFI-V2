@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Cutis\Tables;
 
 use App\Enum\Cuti\StatusPengajuan;
 use App\Models\Cuti;
+use App\Permissions\Permission;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
@@ -39,12 +40,6 @@ class CutisTable
             ->columns([
                 Split::make([
                     Stack::make([
-                        TextColumn::make('karyawan.nama_lengkap')
-                            ->label('Nama Karyawan')
-                            ->searchable()
-                            ->sortable()
-                            ->weight(FontWeight::Bold)
-                            ->visible(fn() => Auth::user()->hasAnyRole([\App\Enum\Role::ADMIN, \App\Enum\Role::DIREKTUR])),
                         TextColumn::make('keterangan')
                             ->description('Keterangan','above')
                             ->size(TextSize::Large)
@@ -52,20 +47,17 @@ class CutisTable
                         TextColumn::make('tempat_dibuat')
                             ->searchable(),
                         TextColumn::make('tanggal_dibuat')
-                            ->date('d F Y')
-                            ->sortable(),
+                            ->date('d F Y'),
                     ]),
                     Grid::make(2)->schema([
                         TextColumn::make('tanggal_mulai')
                             ->alignCenter()
                             ->description('Mulai dari','above')
-                            ->date('d M Y')
-                            ->sortable(),
+                            ->date('d M Y'),
                         TextColumn::make('tanggal_selesai')
                             ->alignCenter()
                             ->description('Sampai dengan','above')
-                            ->date('d M Y')
-                            ->sortable(),
+                            ->date('d M Y'),
                     ])->visibleFrom('md'),
                     Stack::make([
                         TextColumn::make('jumlah_lampiran')
@@ -81,7 +73,8 @@ class CutisTable
                             ->badge(),
                     ])
                 ]),
-            ])
+            ])->striped()
+            ->defaultGroup('karyawan.nama_lengkap')->searchable()
             ->filters([
                 SelectFilter::make('status')
                     ->native(false)
@@ -280,29 +273,10 @@ class CutisTable
                         ->disabled(fn($record) => !$record->hasLampiran())
                         ->authorize('view')
                         ->modalHeading('Lampiran Pengajuan Cuti')
-                        ->modalContent(function (Cuti $record) {
-                            $lampiran = $record->lampiran ?? [];
-                            $html = '<div class="space-y-2">';
-
-                            if (empty($lampiran)) {
-                                $html .= '<p class="text-gray-500">Tidak ada lampiran</p>';
-                            } else {
-                                $html .= '<p class="font-semibold mb-2">Jumlah lampiran: ' . count($lampiran) . '</p>';
-                                $html .= '<ul class="list-disc list-inside space-y-1">';
-                                foreach ($lampiran as $index => $file) {
-                                    $filename = basename($file);
-                                    $url = route('cuti.lampiran.download', [
-                                        'cuti' => $record->id,
-                                        'filename' => $filename
-                                    ]);
-                                    $html .= '<li><a href="' . $url . '" target="_blank" class="text-primary-600 hover:underline">' . $filename . '</a></li>';
-                                }
-                                $html .= '</ul>';
-                            }
-
-                            $html .= '</div>';
-                            return new \Illuminate\Support\HtmlString($html);
-                        })
+                        ->modalContent(fn ($record): \Illuminate\Contracts\View\View => view(
+                            'filament.pages.lampiran-modal-content',
+                            ['record' => $record],
+                        ))
                         ->modalSubmitAction(false)
                         ->modalCancelActionLabel('Tutup'),
                     // Aksi download surat cuti (hanya untuk yang sudah disetujui dan belum expired)
@@ -383,6 +357,7 @@ class CutisTable
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
+                        ->visible(fn() =>Auth::user()->hasAnyDirectPermission([\App\Enum\Permission::DIRECT_MANAGE_CUTI, \App\Enum\Permission::REJECT_MANAGE_CUTI,\App\Enum\Permission::APPROVE_MANAGE_CUTI]))
                         ->after(function ($record) {
                             // Hapus semua files terkait
                             if ($record->file_path && Storage::disk('public')->exists($record->file_path)) {
