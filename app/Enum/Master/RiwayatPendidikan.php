@@ -2,7 +2,10 @@
 
 namespace App\Enum\Master;
 
-enum RiwayatPendidikan:string
+use Filament\Support\Contracts\HasLabel;
+use Illuminate\Contracts\Support\Htmlable;
+
+enum RiwayatPendidikan:string implements HasLabel
 {
     case SD = 'SD';
     case SMP = 'SMP';
@@ -14,4 +17,8 @@ enum RiwayatPendidikan:string
     case S1 = 'S1';
     case S2 = 'S2';
     case S3 = 'S3';
+    public function getLabel(): string|Htmlable|null
+    {
+        return $this->value;
+    }
 }
