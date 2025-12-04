@@ -64,6 +64,9 @@ class KaryawanInfolist
                                         TextEntry::make('npwp')
                                             ->alignEnd()
                                             ->hiddenLabel(),
+                                        TextEntry::make('unit_kerja')
+                                            ->alignEnd()
+                                            ->hiddenLabel(),
                                     ])->dense()
 
                                 ])->columns(2),
