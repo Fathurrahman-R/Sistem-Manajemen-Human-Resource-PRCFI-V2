@@ -20,20 +20,20 @@ class CreateCuti extends CreateRecord
         $data['karyawan_id'] = User::getKaryawanId(Auth::user());
 
         // Get signature from Livewire component if using draw method
-        $signatureDrawn = request()->input('signature_drawn');
+//        $signatureDrawn = request()->input('signature_drawn');
 
         // Try to get from session/livewire state
-        if (!$signatureDrawn && session()->has('livewire.signature_pad.signatureData')) {
-            $signatureDrawn = session('livewire.signature_pad.signatureData');
-        }
+//        if (!$signatureDrawn && session()->has('livewire.signature_pad.signatureData')) {
+//            $signatureDrawn = session('livewire.signature_pad.signatureData');
+//        }
 
         \Log::info('CreateCuti - mutateFormDataBeforeCreate', [
             'signature_method' => $data['signature_method'] ?? null,
             'has_signature_png' => !empty($data['signature_png']),
-            'has_signature_drawn_from_data' => !empty($data['signature_drawn']),
-            'has_signature_drawn_from_request' => !empty($signatureDrawn),
-            'signature_drawn_length_data' => isset($data['signature_drawn']) ? strlen($data['signature_drawn']) : 0,
-            'signature_drawn_length_request' => $signatureDrawn ? strlen($signatureDrawn) : 0,
+//            'has_signature_drawn_from_data' => !empty($data['signature_drawn']),
+//            'has_signature_drawn_from_request' => !empty($signatureDrawn),
+//            'signature_drawn_length_data' => isset($data['signature_drawn']) ? strlen($data['signature_drawn']) : 0,
+//            'signature_drawn_length_request' => $signatureDrawn ? strlen($signatureDrawn) : 0,
         ]);
 
         // Simpan signature ke storage
@@ -46,13 +46,13 @@ class CreateCuti extends CreateRecord
             \Log::info('Using upload signature', ['path' => $signaturePath]);
         }
 
-        if ($signatureMethod === 'draw') {
-            // Try data array first, then request
-            $signaturePath = $data['signature_drawn'] ?? $signatureDrawn;
-            if ($signaturePath) {
-                \Log::info('Using draw signature', ['data_url_length' => strlen($signaturePath)]);
-            }
-        }
+//        if ($signatureMethod === 'draw') {
+//            // Try data array first, then request
+//            $signaturePath = $data['signature_drawn'] ?? $signatureDrawn;
+//            if ($signaturePath) {
+//                \Log::info('Using draw signature', ['data_url_length' => strlen($signaturePath)]);
+//            }
+//        }
 
         if ($signaturePath) {
             try {
