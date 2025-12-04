@@ -20,20 +20,13 @@ class KaryawansTable
     {
         return $table
             ->columns([
-                TextColumn::make('Daftar Karyawan')
-                    ->hiddenFrom('md')
-                    ->html()
-                    ->getStateUsing(fn ($record) => "<strong>{$record->nama_lengkap}</strong><br>{$record->email}<br><span class='fi-color fi-color-primary fi-text-color-600 dark:fi-text-color-200 fi-badge fi-size-sm'>{$record->posisi}</span><br><span class='fi-color fi-color-primary fi-text-color-600 dark:fi-text-color-200 fi-badge fi-size-sm'>{$record->status->value}</span>")
-                    ->searchable(),
                 TextColumn::make('nama_lengkap')
                     ->weight(FontWeight::Bold)
-                    ->visibleFrom('md')
                     ->searchable(),
                 TextColumn::make('email')
                     ->visibleFrom('md')
                     ->searchable(),
                 TextColumn::make('posisi')
-                    ->visibleFrom('md')
                     ->alignCenter()
                     ->badge()
                     ->color(function ($record) {
@@ -50,6 +43,7 @@ class KaryawansTable
                         $index = crc32((string) $record->id) % count($colors);
                         return $colors[$index];
                     })
+                    ->visibleFrom('md')
                     ->searchable(),
                 TextColumn::make('status')
                     ->visibleFrom('md')
