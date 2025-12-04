@@ -6,6 +6,7 @@ use App\Filament\Resources\Master\Programs\Pages\ManagePrograms;
 use App\Filament\Resources\Master\Programs\RelationManagers\KaryawanRelationManager;
 use App\Models\Master\Program;
 use BackedEnum;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -25,7 +26,7 @@ class ProgramResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedStar;
 
-    protected static ?string $recordTitleAttribute = 'Manajemen Program';
+    protected static ?string $recordTitleAttribute = 'nama';
     protected static string | UnitEnum | null $navigationGroup = 'Data Master';
 
     public static function form(Schema $schema): Schema
@@ -53,11 +54,14 @@ class ProgramResource extends Resource
                 TextColumn::make('nama')
                     ->searchable(),
                 TextColumn::make('lokasi')
+                    ->visibleFrom('md')
                     ->searchable(),
                 TextColumn::make('tanggal_mulai')
+                    ->visibleFrom('md')
                     ->date('d M Y')
                     ->sortable(),
                 TextColumn::make('tanggal_selesai')
+                    ->visibleFrom('md')
                     ->date('d M Y')
                     ->sortable(),
             ])
@@ -65,8 +69,10 @@ class ProgramResource extends Resource
                 //
             ])
             ->recordActions([
-                EditAction::make(),
-                DeleteAction::make(),
+                ActionGroup::make([
+                    EditAction::make()->label('')->color('gray'),
+                    DeleteAction::make()->label(''),
+                ])->buttonGroup()
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

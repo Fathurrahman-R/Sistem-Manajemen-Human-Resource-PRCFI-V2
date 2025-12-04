@@ -26,7 +26,7 @@ class KaryawanResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUserGroup;
 
-    protected static ?string $recordTitleAttribute = 'Data Master Karyawan';
+    protected static ?string $recordTitleAttribute = 'nama_lengkap';
     protected static string | UnitEnum | null $navigationGroup = 'Data Master';
 
     public static function form(Schema $schema): Schema

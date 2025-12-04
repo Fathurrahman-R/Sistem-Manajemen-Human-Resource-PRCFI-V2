@@ -32,7 +32,7 @@ class UserResource extends Resource
 {
     protected static ?string $model = User::class;
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUser;
-    protected static ?string $recordTitleAttribute = 'Manajemen User';
+    protected static ?string $recordTitleAttribute = 'name';
     protected static string | UnitEnum | null $navigationGroup = 'Authorization';
 
     public static function form(Schema $schema): Schema
@@ -47,7 +47,7 @@ class UserResource extends Resource
                     ->required(),
                 Select::make('role')
                     ->native(false)
-                    ->disableOptionWhen(fn (string $value): bool => $value === \App\Enum\Role::SUPERADMIN->value)
+//                    ->disableOptionWhen(fn (string $value): bool => $value === \App\Enum\Role::SUPERADMIN->value)
                     ->relationship(name: 'roles', titleAttribute: 'name', modifyQueryUsing: fn(Builder $query): Builder => $query->whereNotIn('name', [\App\Enum\Role::SUPERADMIN]))
                     ->required(),
                 TextInput::make('password')

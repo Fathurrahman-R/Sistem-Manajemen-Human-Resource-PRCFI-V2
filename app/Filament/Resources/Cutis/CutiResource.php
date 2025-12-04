@@ -25,7 +25,7 @@ class CutiResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::Ticket;
     protected static ?string $navigationLabel = 'Pengajuan Cuti';
 
-    protected static ?string $recordTitleAttribute = 'Manajemen Cuti';
+    protected static ?string $recordTitleAttribute = 'karyawan.nama_lengkap';
 
     public static function form(Schema $schema): Schema
     {
