@@ -97,8 +97,7 @@ class CutiForm
                             ->native(false)
                             ->required(),
                     ])
-                        ->label('Lama cuti')
-                        ->columns(2),
+                        ->label('Lama cuti'),
                     Textarea::make('keterangan')
                         ->readOnly(function($record,$operation){
                             if($operation!=='create'){
@@ -112,6 +111,8 @@ class CutiForm
                         })
                         ->required()
                         ->columnSpanFull(),
+                ]),
+                Section::make([
                     FileUpload::make('lampiran')
                         ->label('Lampiran (Opsional)')
                         ->helperText('Upload lampiran seperti surat keterangan dokter, dll.')
@@ -192,12 +193,12 @@ class CutiForm
                                     }
                                 }),
 
-                            View::make('signature-wrapper')
-                                ->visible(fn (callable $get) => $get('signature_method') === 'draw'),
+//                            View::make('signature-wrapper')
+//                                ->visible(fn (callable $get) => $get('signature_method') === 'draw'),
                         ])
                         ->collapsible()
                         ->columnSpanFull(),
                 ])
-            ])->columns(1);
+            ])->columns(2);
     }
 }
