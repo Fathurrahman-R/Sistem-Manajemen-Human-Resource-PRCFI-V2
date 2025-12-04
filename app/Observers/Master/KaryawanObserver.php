@@ -14,7 +14,7 @@ class KaryawanObserver
         // Wrap dalam transaction terpisah agar karyawan sudah commit
         DB::afterCommit(function () use ($karyawan) {
             User::firstOrCreate(
-                ['email' => $karyawan->email],
+                ['email' => $karyawan->email,'karyawan_id'=>$karyawan->id],
                 [
                     'name' => $karyawan->nama_lengkap,
                     'password' => Hash::make('password'),

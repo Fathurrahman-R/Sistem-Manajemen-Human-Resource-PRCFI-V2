@@ -34,6 +34,7 @@ class User extends Authenticatable implements MustVerifyEmail, canResetPassword,
     protected $fillable = [
         'name',
         'email',
+        'karyawan_id',
         'password',
         'email_verified_at',
     ];
@@ -67,13 +68,13 @@ class User extends Authenticatable implements MustVerifyEmail, canResetPassword,
     }
     public function karyawan()
     {
-        return $this->belongsTo(Karyawan::class,'email','email');
+        return $this->belongsTo(Karyawan::class,'karyawan_id','id');
     }
     protected string $guard_name = 'web';
 
     public static function getKaryawanId(User $user)
     {
-        return Karyawan::where('email',$user->email)->first()->id;
+        return $user->karyawan_id;
     }
     public function canAccessPanel(Panel $panel): bool
     {

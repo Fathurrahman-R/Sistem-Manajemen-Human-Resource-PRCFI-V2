@@ -2,6 +2,8 @@
 
 namespace App\Models\Master;
 
+use App\Enum\Master\EnglishSkill;
+use App\Enum\Master\RiwayatPendidikan;
 use App\Enum\Master\StatusKerja;
 use App\Models\Cuti;
 use App\Models\User;
@@ -28,6 +30,7 @@ class Karyawan extends Model
     protected $fillable = [
         'nama_lengkap',
         'posisi',
+        'unit_kerja',
         'tempat_lahir',
         'tanggal_lahir',
         'email',
@@ -51,13 +54,14 @@ class Karyawan extends Model
         return [
             'nama_lengkap'=>'string',
             'posisi'=>'string',
+            'unit_kerja'=>'string',
             'tempat_lahir'=>'string',
             'tanggal_lahir'=>'date',
             'email'=>'string',
             'jenis_kelamin'=>'string',
-            'riwayat_pendidikan'=>'string',
+            'riwayat_pendidikan'=>RiwayatPendidikan::class,
             'institusi_pendidikan'=>'string',
-            'english_skill'=>'string',
+            'english_skill'=>EnglishSkill::class,
             'pengalaman_kerja'=>'int',
             'tanggal_bergabung'=>'date',
             'tanggal_expired'=>'date',
@@ -98,7 +102,7 @@ class Karyawan extends Model
 //    }
     public function user()
     {
-        return $this->hasOne(User::class,'email','email');
+        return $this->hasOne(User::class,'karyawan_id','id');
     }
     public function program(): BelongsToMany
     {
