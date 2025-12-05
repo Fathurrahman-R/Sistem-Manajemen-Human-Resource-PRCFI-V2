@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Cutis\Tables;
 use App\Enum\Cuti\StatusPengajuan;
 use App\Models\Cuti;
 use App\Permissions\Permission;
+use App\Services\CutiDocumentServiceNew;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
@@ -251,7 +252,7 @@ class CutisTable
                 DeleteAction::make()
                     ->after(function(Cuti $record){
                         $service = app(\App\Services\CutiDocumentServiceNew::class);
-                        $service->cleanupAllDocuments($record, $record->file_path, $record->signature_karyawan, $record->signature_direktur, $record->lampiran);
+                        $service->cleanupAllDocuments($record);
                     })
                     ->button()
                     ->disabled(fn($record)=>$record->status!==StatusPengajuan::Diajukan),
@@ -352,22 +353,8 @@ class CutisTable
                         ->visible(fn() =>Auth::user()->hasAnyDirectPermission([\App\Enum\Permission::DIRECT_MANAGE_CUTI, \App\Enum\Permission::REJECT_MANAGE_CUTI,\App\Enum\Permission::APPROVE_MANAGE_CUTI]))
                         ->after(function ($record) {
                             // Hapus semua files terkait
-                            if ($record->file_path && Storage::disk('public')->exists($record->file_path)) {
-                                Storage::disk('public')->delete($record->file_path);
-                            }
-                            if ($record->signature_karyawan && Storage::disk('public')->exists($record->signature_karyawan)) {
-                                Storage::disk('public')->delete($record->signature_karyawan);
-                            }
-                            if ($record->signature_direktur && Storage::disk('public')->exists($record->signature_direktur)) {
-                                Storage::disk('public')->delete($record->signature_direktur);
-                            }
-                            if ($record->lampiran && is_array($record->lampiran)) {
-                                foreach ($record->lampiran as $file) {
-                                    if (Storage::exists($file)) {
-                                        Storage::delete($file);
-                                    }
-                                }
-                            }
+                            $service = app(CutiDocumentServiceNew::class);
+                            $service->cleanupAllDocuments($record);
                         })
                 ]),
             ])
