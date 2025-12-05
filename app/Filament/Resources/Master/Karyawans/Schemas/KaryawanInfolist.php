@@ -145,3 +145,6 @@ class KaryawanInfolist
             ])->columns(1);
     }
 }
+
+
+
