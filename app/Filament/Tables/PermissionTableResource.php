@@ -14,7 +14,8 @@ class PermissionTableResource
     public static function configure(Table $table): Table
     {
         return $table
-            ->query(fn (): Builder => Permission::query())
+            ->modifyQueryUsing(fn (Builder $query) => $query
+                ->whereNotIn('permissions.group', ['Manajemen User', 'Manajemen Role']))
             ->columns([
                 TextColumn::make('name')
                     ->alignCenter()
