@@ -18,6 +18,7 @@ class CreateCuti extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $data['karyawan_id'] = User::getKaryawanId(Auth::user());
+        $data['signature_karyawan'] = $data['signature_png'];
 
         // Get signature from Livewire component if using draw method
 //        $signatureDrawn = request()->input('signature_drawn');
@@ -27,24 +28,24 @@ class CreateCuti extends CreateRecord
 //            $signatureDrawn = session('livewire.signature_pad.signatureData');
 //        }
 
-        \Log::info('CreateCuti - mutateFormDataBeforeCreate', [
-            'signature_method' => $data['signature_method'] ?? null,
-            'has_signature_png' => !empty($data['signature_png']),
+//        \Log::info('CreateCuti - mutateFormDataBeforeCreate', [
+//            'signature_method' => $data['signature_method'] ?? null,
+//            'has_signature_png' => !empty($data['signature_png']),
 //            'has_signature_drawn_from_data' => !empty($data['signature_drawn']),
 //            'has_signature_drawn_from_request' => !empty($signatureDrawn),
 //            'signature_drawn_length_data' => isset($data['signature_drawn']) ? strlen($data['signature_drawn']) : 0,
 //            'signature_drawn_length_request' => $signatureDrawn ? strlen($signatureDrawn) : 0,
-        ]);
+//        ]);
 
         // Simpan signature ke storage
-        $documentService = app(CutiDocumentServiceNew::class);
-        $signaturePath = null;
-        $signatureMethod = $data['signature_method'] ?? null;
-
-        if ($signatureMethod === 'upload' && !empty($data['signature_png'])) {
-            $signaturePath = $data['signature_png'];
-            \Log::info('Using upload signature', ['path' => $signaturePath]);
-        }
+//        $documentService = app(CutiDocumentServiceNew::class);
+//        $signaturePath = null;
+//        $signatureMethod = $data['signature_method'] ?? null;
+//
+//        if ($signatureMethod === 'upload' && !empty($data['signature_png'])) {
+//            $signaturePath = $data['signature_png'];
+//            \Log::info('Using upload signature', ['path' => $signaturePath]);
+//        }
 
 //        if ($signatureMethod === 'draw') {
 //            // Try data array first, then request
@@ -54,21 +55,21 @@ class CreateCuti extends CreateRecord
 //            }
 //        }
 
-        if ($signaturePath) {
-            try {
-                $savedPath = $documentService->saveSignature($signaturePath, 'karyawan');
-                $data['signature_karyawan'] = $savedPath;
-                \Log::info('Signature saved successfully', ['saved_path' => $savedPath]);
-            } catch (\Exception $e) {
-                \Log::error('Failed to save signature', ['error' => $e->getMessage()]);
-                throw $e;
-            }
-        } else {
-            \Log::warning('No signature path provided');
-        }
-
-        // Hapus field signature dari form data
-        unset($data['signature_method'], $data['signature_png'], $data['signature_drawn'], $data['signature_png_name']);
+//        if ($signaturePath) {
+//            try {
+//                $savedPath = $documentService->saveSignature($signaturePath, 'karyawan');
+//                $data['signature_karyawan'] = $savedPath;
+//                \Log::info('Signature saved successfully', ['saved_path' => $savedPath]);
+//            } catch (\Exception $e) {
+//                \Log::error('Failed to save signature', ['error' => $e->getMessage()]);
+//                throw $e;
+//            }
+//        } else {
+//            \Log::warning('No signature path provided');
+//        }
+//
+//        // Hapus field signature dari form data
+//        unset($data['signature_method'], $data['signature_png'], $data['signature_drawn'], $data['signature_png_name']);
 
         return $data;
     }
@@ -76,8 +77,8 @@ class CreateCuti extends CreateRecord
     protected function beforeCreate(): void
     {
         // Store signature data from any Livewire components in form state
-        $formState = $this->form->getState();
-        \Log::info('beforeCreate - form state', ['keys' => array_keys($formState)]);
+//        $formState = $this->form->getState();
+//        \Log::info('beforeCreate - form state', ['keys' => array_keys($formState)]);
     }
 
     protected function afterCreate(): void
