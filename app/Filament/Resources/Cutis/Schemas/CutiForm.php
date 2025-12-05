@@ -34,7 +34,7 @@ class CutiForm
                         TextInput::make('tempat_dibuat')
                             ->readOnly(function($record,$operation){
                                 if($operation!=='create'){
-                                    if ($record->status!==StatusPengajuan::Diajukan->value){
+                                    if ($record->status!==StatusPengajuan::Diajukan){
                                         return true;
                                     }
                                     return false;
@@ -48,7 +48,7 @@ class CutiForm
                         DatePicker::make('tanggal_dibuat')
                             ->readOnly(function($record,$operation){
                                 if($operation!=='create'){
-                                    if ($record->status!==StatusPengajuan::Diajukan->value){
+                                    if ($record->status!==StatusPengajuan::Diajukan){
                                         return true;
                                     }
                                     return false;
@@ -66,7 +66,7 @@ class CutiForm
                         DatePicker::make('tanggal_mulai')
                             ->readOnly(function($record,$operation){
                                 if($operation!=='create'){
-                                    if ($record->status!==StatusPengajuan::Diajukan->value){
+                                    if ($record->status!==StatusPengajuan::Diajukan){
                                         return true;
                                     }
                                     return false;
@@ -83,7 +83,7 @@ class CutiForm
                         DatePicker::make('tanggal_selesai')
                             ->readOnly(function($record,$operation){
                                 if($operation!=='create'){
-                                    if ($record->status!==StatusPengajuan::Diajukan->value){
+                                    if ($record->status!==StatusPengajuan::Diajukan){
                                         return true;
                                     }
                                     return false;
@@ -101,7 +101,7 @@ class CutiForm
                     Textarea::make('keterangan')
                         ->readOnly(function($record,$operation){
                             if($operation!=='create'){
-                                if ($record->status!==StatusPengajuan::Diajukan->value){
+                                if ($record->status!==StatusPengajuan::Diajukan){
                                     return true;
                                 }
                                 return false;
@@ -117,7 +117,8 @@ class CutiForm
                         ->label('Lampiran (Opsional)')
                         ->helperText('Upload lampiran seperti surat keterangan dokter, dll.')
                         ->directory('lampiran-cuti')
-                        ->visibility('private')
+                        ->disk('public')
+                        ->visibility('public')
                         ->multiple()
                         ->maxFiles(5)
                         ->maxSize(5120) // 5MB
@@ -136,7 +137,7 @@ class CutiForm
 //                        })
                         ->disabled(function($record,$operation){
                             if($operation!=='create'){
-                                if ($record->status!==StatusPengajuan::Diajukan->value){
+                                if ($record->status!==StatusPengajuan::Diajukan){
                                     return true;
                                 }
                                 return false;
@@ -161,7 +162,7 @@ class CutiForm
                                 ->required()
                                 ->disabled(function($record,$operation){
                                     if($operation!=='create'){
-                                        if ($record->status!==StatusPengajuan::Diajukan->value){
+                                        if ($record->status!==StatusPengajuan::Diajukan){
                                             return true;
                                         }
                                         return false;
@@ -184,7 +185,7 @@ class CutiForm
                                 ->visible(fn (callable $get) => $get('signature_method') === 'upload')
                                 ->disabled(function($record,$operation){
                                     if($operation!=='create'){
-                                        if ($record->status!==StatusPengajuan::Diajukan->value){
+                                        if ($record->status!==StatusPengajuan::Diajukan){
                                             return true;
                                         }
                                         return false;
