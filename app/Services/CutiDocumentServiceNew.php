@@ -283,20 +283,20 @@ class CutiDocumentServiceNew
 
         return $deletedCount;
     }
-    public function cleanupAllDocuments(Cuti $record, ?string $documentPath, ?string $karyawanSignature, ?string $direkturSignature, ?array $lampiran):void
+    public function cleanupAllDocuments(Cuti $record):void
     {
-        if ($documentPath && Storage::disk('public')->exists($documentPath)) {
-            Storage::disk('public')->delete($documentPath);
+        if ($record->file_path && Storage::disk('public')->exists($record->file_path)) {
+            Storage::disk('public')->delete($record->file_path);
         }
-        if ($karyawanSignature && Storage::disk('public')->exists($karyawanSignature)) {
-            Storage::disk('public')->delete($karyawanSignature);
+        if ($record->signature_karyawan && Storage::disk('public')->exists($record->signature_karyawan)) {
+            Storage::disk('public')->delete($record->signature_karyawan);
         }
-        if ($direkturSignature && Storage::disk('public')->exists($direkturSignature)) {
-            Storage::disk('public')->delete($direkturSignature);
+        if ($record->signature_direktur && Storage::disk('public')->exists($record->signature_direktur)) {
+            Storage::disk('public')->delete($record->signature_direktur);
         }
-        if ($lampiran)
+        if ($record->lampiran)
         {
-            foreach ($lampiran as $path) {
+            foreach ($record->lampiran as $path) {
                 if ($path && Storage::disk('public')->exists($path)) {
                     Storage::disk('public')->delete($path);
                 }
@@ -309,5 +309,40 @@ class CutiDocumentServiceNew
             'lampiran' => null,
         ]);
     }
-}
+    /**
+     * Cleanup existing files for an update, while preserving attachments still selected by the user.
+     * - Deletes old document file.
+     * - Deletes old signatures.
+     * - Deletes lampiran removed by user (not present in new list).
+     */
+    public function cleanupForUpdate(Cuti $record, array $newLampiran = []): void
+    {
+        // Delete current document file
+        if ($record->file_path && Storage::disk('public')->exists($record->file_path)) {
+            Storage::disk('public')->delete($record->file_path);
+        }
+        // Delete existing signatures (karyawan + direktur)
+        if ($record->signature_karyawan && Storage::disk('public')->exists($record->signature_karyawan)) {
+            Storage::disk('public')->delete($record->signature_karyawan);
+        }
+        if ($record->signature_direktur && Storage::disk('public')->exists($record->signature_direktur)) {
+            Storage::disk('public')->delete($record->signature_direktur);
+        }
 
+        // Delete lampiran that are not in the new list; keep those the user kept
+        $oldLampiran = is_array($record->lampiran) ? $record->lampiran : [];
+        $newSet = collect($newLampiran)->filter()->values()->all();
+        foreach ($oldLampiran as $path) {
+            if (!in_array($path, $newSet, true) && Storage::disk('public')->exists($path)) {
+                Storage::disk('public')->delete($path);
+            }
+        }
+
+        // Clear file_path & signatures; DO NOT wipe lampiran, they'll be replaced by new list in data
+        $record->update([
+            'file_path' => null,
+            'signature_karyawan' => null,
+            'signature_direktur' => null,
+        ]);
+    }
+}
