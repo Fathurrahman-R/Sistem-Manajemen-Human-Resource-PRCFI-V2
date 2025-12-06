@@ -71,6 +71,37 @@ class RolesAndPermissionsSeeder extends Seeder
             ]);
         }
 
+        $m_ts = \App\Permissions\Permission::GROUP_PERMISSION_MANAGE_TIMESHEET;
+        foreach($m_ts as $ts) {
+            Permission::create([
+                'name' => $ts,
+                'group' => 'Manajemen Timesheet',
+            ]);
+        }
+
+        $ca_ts = \App\Permissions\Permission::GROUP_PERMISSION_ADMIN_CONTROL_TIMESHEET;
+        foreach($ca_ts as $ts) {
+            Permission::create([
+                'name' => $ts,
+                'group' => 'Control Timesheet',
+            ]);
+        }
+
+        $cd_ts = \App\Permissions\Permission::GROUP_PERMISSION_DIREKTUR_CONTROL_TIMESHEET;
+        foreach($cd_ts as $ts) {
+            Permission::create([
+                'name' => $ts,
+                'group' => 'Control Timesheet',
+            ]);
+        }
+        $m_i_ts = \App\Permissions\Permission::GROUP_PERMISSION_MANAGE_ISI_TIMESHEET;
+        foreach($m_i_ts as $ts) {
+            Permission::create([
+                'name' => $ts,
+                'group' => 'Manajemen Isi Timesheet',
+            ]);
+        }
+
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
         $superadmin = Role::create(['name'=>\App\Enum\Role::SUPERADMIN]);
@@ -81,16 +112,6 @@ class RolesAndPermissionsSeeder extends Seeder
             }
             foreach ($superadminPermission as $permission) {
                 $superadmin->givePermissionTo($permission);
-            }
-        }
-        $karyawan = Role::create(['name'=>\App\Enum\Role::KARYAWAN]);
-        foreach (\App\Permissions\Permission::GROUP_KARYAWAN_PERMISSION as $karyawanPermission) {
-            if (!is_array($karyawanPermission)){
-                $karyawan->givePermissionTo($karyawanPermission);
-                continue;
-            }
-            foreach ($karyawanPermission as $permission) {
-                $karyawan->givePermissionTo($permission);
             }
         }
         $admin = Role::create(['name'=>\App\Enum\Role::ADMIN]);
@@ -111,6 +132,16 @@ class RolesAndPermissionsSeeder extends Seeder
             }
             foreach ($direkturPermission as $permission) {
                 $direktur->givePermissionTo($permission);
+            }
+        }
+        $karyawan = Role::create(['name'=>\App\Enum\Role::KARYAWAN]);
+        foreach (\App\Permissions\Permission::GROUP_KARYAWAN_PERMISSION as $karyawanPermission) {
+            if (!is_array($karyawanPermission)){
+                $karyawan->givePermissionTo($karyawanPermission);
+                continue;
+            }
+            foreach ($karyawanPermission as $permission) {
+                $karyawan->givePermissionTo($permission);
             }
         }
     }

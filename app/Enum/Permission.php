@@ -36,4 +36,19 @@ enum Permission:string
     case DIRECT_MANAGE_CUTI = 'teruskan_manajemen_cuti';
     case APPROVE_MANAGE_CUTI = 'setujui_manajemen_cuti';
     case REJECT_MANAGE_CUTI = 'tolak_manajemen_cuti';
+
+    // Timesheet
+    case VIEW_MANAGE_TIMESHEET = 'lihat_manajemen_timesheet';
+    case CREATE_MANAGE_TIMESHEET = 'tambah_manajemen_timesheet';
+    case EDIT_MANAGE_TIMESHEET = 'ubah_manajemen_timesheet';
+    case DELETE_MANAGE_TIMESHEET = 'hapus_manajemen_timesheet';
+    case DIRECT_MANAGE_TIMESHEET = 'teruskan_manajemen_timesheet';
+    case APPROVE_MANAGE_TIMESHEET = 'setujui_manajemen_timesheet';
+    case REJECT_MANAGE_TIMESHEET = 'tolak_manajemen_timesheet';
+
+    // Isi Timesheet
+    case VIEW_MANAGE_ISI_TIMESHEET = 'lihat_manajemen_isi_timesheet';
+    case CREATE_MANAGE_ISI_TIMESHEET = 'tambah_manajemen_isi_timesheet';
+    case EDIT_MANAGE_ISI_TIMESHEET = 'ubah_manajemen_isi_timesheet';
+    case DELETE_MANAGE_ISI_TIMESHEET = 'hapus_manajemen_isi_timesheet';
 }
