@@ -37,7 +37,7 @@ class CutisTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->poll('30s')
+            ->poll('10s')
             ->columns([
                 Split::make([
                     Stack::make([
@@ -74,14 +74,17 @@ class CutisTable
                             ->badge(),
                     ])
                 ]),
-            ])->striped()
-            ->defaultGroup('karyawan.nama_lengkap')->searchable()
+            ])
+            ->striped()
+            ->defaultGroup('karyawan.nama_lengkap')
+            ->searchable()
             ->filters([
                 SelectFilter::make('status')
                     ->native(false)
                     ->options(StatusPengajuan::class)
                     ->attribute('status'),
-            ])->filtersLayout(FiltersLayout::AboveContent)
+            ])
+            ->filtersLayout(FiltersLayout::AboveContent)
             ->recordActions([
                 // Aksi approve direktur
                 Action::make('Approve')
@@ -213,7 +216,7 @@ class CutisTable
                     ->action(function (Cuti $record) {
                         // Hapus dokumen dan signature files (TANPA HAPUS RECORD)
                         $service = app(\App\Services\CutiDocumentServiceNew::class);
-                        $service->cleanupAllDocuments($record, $record->file_path, $record->signature_karyawan, $record->signature_direktur, $record->lampiran);
+                        $service->cleanupAllDocuments($record);
                         $record->reject(Auth::user());
                     })
                     ->successNotificationTitle('Pengajuan cuti berhasil ditolak dan dokumen dihapus')
@@ -346,7 +349,7 @@ class CutisTable
                             }
                         }),
                 ])->dropdownOffset(0)->dropdownPlacement('bottom-end'),
-            ],position: RecordActionsPosition::AfterColumns)->poll('10s')
+            ],position: RecordActionsPosition::AfterColumns)
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
