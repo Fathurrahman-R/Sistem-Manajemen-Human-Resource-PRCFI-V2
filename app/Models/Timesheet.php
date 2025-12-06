@@ -68,7 +68,7 @@ class Timesheet extends Model
     }
     public function approved(User $user):bool
     {
-        if ($user->hasPermissionTo(Permission::DIRECT_MANAGE_TIMESHEET))
+        if ($user->hasPermissionTo(Permission::APPROVE_MANAGE_TIMESHEET))
         {
             return $this->update([
                 'status' => StatusPersetujuan::Approved
@@ -78,7 +78,7 @@ class Timesheet extends Model
     }
     public function rejected(User $user):bool
     {
-        if ($user->hasPermissionTo(Permission::DIRECT_MANAGE_TIMESHEET))
+        if ($user->hasPermissionTo(Permission::REJECT_MANAGE_TIMESHEET))
         {
             return $this->update([
                 'status' => StatusPersetujuan::Rejected
