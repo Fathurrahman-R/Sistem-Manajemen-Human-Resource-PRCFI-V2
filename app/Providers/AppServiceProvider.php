@@ -3,8 +3,10 @@
 namespace App\Providers;
 
 use App\Models\Master\Karyawan;
+use App\Models\Timesheet;
 use App\Models\User;
 use App\Observers\Master\KaryawanObserver;
+use App\Observers\TimesheetObserver;
 use App\Observers\UserObserver;
 use App\Policies\RolePolicy;
 use Illuminate\Support\Facades\Gate;
@@ -26,6 +28,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Karyawan::observe(KaryawanObserver::class);
+        Timesheet::observe(TimesheetObserver::class);
         User::observe(UserObserver::class);
         Gate::policy(\Spatie\Permission\Models\Role::class, RolePolicy::class);
     }
