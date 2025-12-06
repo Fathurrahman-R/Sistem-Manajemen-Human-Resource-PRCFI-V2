@@ -1,5 +1,6 @@
 <?php
 
+use App\Enum\Cuti\StatusPengajuan;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -19,7 +20,7 @@ return new class extends Migration
             $table->date('tanggal_mulai')->nullable(false);
             $table->date('tanggal_selesai')->nullable(false);
             $table->text('keterangan')->nullable(false);
-            $table->enum('status', \App\Enum\Cuti\StatusPengajuan::cases())->nullable(false)->default(\App\Enum\Cuti\StatusPengajuan::Diajukan->value);
+            $table->enum('status', array_column(StatusPengajuan::cases(), 'value'))->nullable(false)->default(StatusPengajuan::Diajukan->value);
             $table->string('approved_at',100)->nullable()->default(null);
             $table->date('approved_date')->nullable()->default(null);
             $table->string('approved_by',100)->nullable()->default(null);

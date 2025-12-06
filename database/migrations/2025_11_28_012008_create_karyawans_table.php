@@ -22,14 +22,14 @@ return new class extends Migration
             $table->date('tanggal_lahir')->nullable(false);
             $table->string('email',100)->unique()->nullable(false);
             $table->enum('jenis_kelamin',['Laki-laki','Perempuan'])->nullable(false);
-            $table->enum('riwayat_pendidikan', RiwayatPendidikan::cases())->nullable()->default(null);
+            $table->enum('riwayat_pendidikan', array_column(RiwayatPendidikan::cases(), 'value'))->nullable()->default(null);
             $table->string('institusi_pendidikan')->nullable()->default(null);
-            $table->enum('english_skill', EnglishSkill::cases())->nullable()->default(null);
+            $table->enum('english_skill', array_column(EnglishSkill::cases(), 'value'))->nullable()->default(null);
             $table->integer('pengalaman_kerja')->nullable()->default(0);
             $table->date('tanggal_bergabung');
             $table->date('tanggal_expired')->nullable()->default(null);
             $table->integer('masa_kerja')->nullable()->default(0);
-            $table->enum('status', StatusKerja::cases())->default(StatusKerja::Kontrak->value);
+            $table->enum('status', array_column(StatusKerja::cases(), 'value'))->default(StatusKerja::Kontrak->value);
             $table->string('cv')->nullable()->default(null);
             $table->string('ktp')->nullable()->default(null);
             $table->string('kk')->nullable()->default(null);
