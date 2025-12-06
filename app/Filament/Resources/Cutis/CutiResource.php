@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Cutis;
 
 use App\Enum\Cuti\StatusPengajuan;
+use App\Enum\Permission;
 use App\Enum\Role;
 use App\Filament\Resources\Cutis\Pages\CreateCuti;
 use App\Filament\Resources\Cutis\Pages\EditCuti;
@@ -58,11 +59,11 @@ class CutiResource extends Resource
         $query = parent::getEloquentQuery();
         $user = Auth::user();
 
-        if ($user->hasRole(Role::DIREKTUR)) {
+        if ($user->hasAnyPermission(Permission::APPROVE_MANAGE_TIMESHEET,Permission::REJECT_MANAGE_TIMESHEET)) {
             return $query->where('status', StatusPengajuan::MenungguDirektur->value);
         }
 
-        if ($user->hasRole(Role::ADMIN)) {
+        if ($user->hasPermissionTo(Permission::DIRECT_MANAGE_TIMESHEET)) {
             return $query->whereIn('status', [
                 StatusPengajuan::Diajukan->value,
                 StatusPengajuan::MenungguHR->value
@@ -70,7 +71,7 @@ class CutiResource extends Resource
         }
 
         // Karyawan hanya bisa lihat cuti milik sendiri
-        if ($user->hasRole(Role::KARYAWAN)) {
+        if ($user->hasAnyPermission(Permission::EDIT_MANAGE_TIMESHEET,Permission::CREATE_MANAGE_TIMESHEET,Permission::DELETE_MANAGE_TIMESHEET)) {
             $karyawanId = \App\Models\User::getKaryawanId($user);
             return $query->where('karyawan_id', $karyawanId);
         }
