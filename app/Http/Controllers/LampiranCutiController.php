@@ -29,11 +29,11 @@ class LampiranCutiController extends Controller
             }
         }
 
-        if (!$filePath || !Storage::exists($filePath)) {
+        if (!$filePath || !Storage::disk('public')->exists($filePath)) {
             abort(404, 'File tidak ditemukan');
         }
 
         // Stream download file
-        return Storage::download($filePath, $filename);
+        return Storage::disk('public')->download($filePath, $filename);
     }
 }
