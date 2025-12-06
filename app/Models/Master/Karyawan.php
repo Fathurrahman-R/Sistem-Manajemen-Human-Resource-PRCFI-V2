@@ -6,6 +6,7 @@ use App\Enum\Master\EnglishSkill;
 use App\Enum\Master\RiwayatPendidikan;
 use App\Enum\Master\StatusKerja;
 use App\Models\Cuti;
+use App\Models\Timesheet;
 use App\Models\User;
 use App\Policies\KaryawanPolicy;
 use Illuminate\Database\Eloquent\Attributes\UsePolicy;
@@ -111,5 +112,9 @@ class Karyawan extends Model
     public function cuti(): HasMany
     {
         return $this->hasMany(Cuti::class, 'karyawan_id', 'id');
+    }
+    public function timesheet(): HasMany
+    {
+        return $this->hasMany(Timesheet::class, 'karyawan_id', 'id');
     }
 }
