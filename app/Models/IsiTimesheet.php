@@ -38,8 +38,8 @@ class IsiTimesheet extends Model
             'work_done' => 'string',
         ];
     }
-    public function timesheet(): BelongsToMany
+    public function timesheet(): BelongsTo
     {
-        return $this->belongsToMany(Timesheet::class);
+        return $this->belongsTo(Timesheet::class);
     }
 }
