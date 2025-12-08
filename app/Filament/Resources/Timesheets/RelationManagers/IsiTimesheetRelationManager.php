@@ -28,7 +28,8 @@ use Illuminate\Support\Facades\Auth;
 class IsiTimesheetRelationManager extends RelationManager
 {
     protected static string $relationship = 'isi_timesheet';
-
+    protected static ?string $relationshipTitle = 'Isi Timesheet';
+    public ?string $activeTab = 'Kehadiran';
 
     public function form(Schema $schema): Schema
     {
@@ -45,10 +46,49 @@ class IsiTimesheetRelationManager extends RelationManager
 
     public function table(Table $table): Table
     {
+        $activeTab = $this->activeTab;
         return $table
             ->paginated(false)
             ->recordTitleAttribute('karyawan.nama_lengkap')
-            ->columns($this->getTableColumns())
+            // ensure stable sorting by date ascending
+            ->defaultSort('tanggal', 'asc')
+            // optional: allow user sorting
+            ->persistSortInSession()
+            ->columns([
+                // Kolom untuk kehadiran
+                TextColumn::make('location'),
+                TextColumn::make('tanggal')
+                    ->hidden(fn()=>$activeTab === 'Aktifitas')
+                    ->label('Date')
+                    ->date('d'),
+                TextColumn::make('jam_bekerja')
+                    ->hidden(fn()=>$activeTab === 'Aktifitas')
+                    ->summarize([
+                        Sum::make()
+                            ->label('Total Jam Bekerja'),
+                    ]),
+
+                // Kolom untuk aktifitas
+                TextColumn::make('tanggal_aktifitas')
+                    ->state(fn($record)=>$record->tanggal)
+                    ->hidden(fn()=>$activeTab === 'Kehadiran')
+                    ->date('d F Y'),
+                TextColumn::make('day_worked')
+                    ->hidden(fn()=>$activeTab === 'Kehadiran')
+                    ->label('day worked')
+                    ->state(fn ($record) => $this->mapJamKeHari($record->jam_bekerja))
+                    ->summarize(
+                        Summarizer::make()
+                            ->label('Total Hari Bekerja')
+                            ->using(fn ($query) => $query->selectRaw(
+                                'SUM(CASE WHEN jam_bekerja >= 8 THEN 1 WHEN jam_bekerja = 4 THEN 0.5 ELSE 0 END) as total'
+                            )->value('total'))
+                    ),
+                TextColumn::make('place')
+                    ->hidden(fn()=>$activeTab === 'Kehadiran'),
+                TextColumn::make('work_done')
+                    ->hidden(fn()=>$activeTab === 'Kehadiran'),
+            ])
             ->striped()
             ->filters([
                 SelectFilter::make('location')->options(Location::class)->native(false)
@@ -69,6 +109,7 @@ class IsiTimesheetRelationManager extends RelationManager
             ])
             ->groups([
                 Group::make('location')
+                    ->titlePrefixedWithLabel(false)
                     ->collapsible(),
             ])
             ->defaultGroup('location');
@@ -79,43 +120,6 @@ class IsiTimesheetRelationManager extends RelationManager
             $jam >= 8 => 1,
             $jam === 4 => 0.5,
             default => 0,
-        };
-    }
-    protected function getTableColumns(): array
-    {
-        return match ($this->activeTab) {
-            'Kehadiran' => [
-                TextColumn::make('tanggal')->label('Date')->date('d'),
-                TextColumn::make('jam_bekerja')
-                    ->summarize([
-                        Sum::make()->label('Total Jam Bekerja'),
-                    ]),
-                TextColumn::make('day_worked')->label('day worked')
-                    ->state(fn ($record) => $this->mapJamKeHari($record->jam_bekerja))
-                    ->summarize(
-                        Summarizer::make()
-                            ->label('Total Hari Bekerja')
-                            ->using(fn ($query) => $query->selectRaw(
-                                'SUM(CASE WHEN jam_bekerja >= 8 THEN 1 WHEN jam_bekerja = 4 THEN 0.5 ELSE 0 END) as total'
-                            )->value('total'))
-                    ),
-                TextColumn::make('place'),
-            ],
-            'Aktifitas' => [
-                TextColumn::make('tanggal')->date('d F Y'),
-                TextColumn::make('jam_bekerja')->label('day worked')
-                    ->state(fn ($record) => $this->mapJamKeHari($record->jam_bekerja))
-                    ->summarize(
-                        Summarizer::make()
-                            ->label('Total Hari Bekerja')
-                            ->using(fn ($query) => $query->selectRaw(
-                                'SUM(CASE WHEN jam_bekerja >= 8 THEN 1 WHEN jam_bekerja = 4 THEN 0.5 ELSE 0 END) as total'
-                            )->value('total'))
-                    ),
-                TextColumn::make('place'),
-                TextColumn::make('work_done'),
-            ],
-            default => [],
         };
     }
 
