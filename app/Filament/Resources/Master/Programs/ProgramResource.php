@@ -49,7 +49,7 @@ class ProgramResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->recordTitleAttribute('Manajemen Program')
+            ->recordTitleAttribute('nama')
             ->columns([
                 TextColumn::make('nama')
                     ->searchable(),
