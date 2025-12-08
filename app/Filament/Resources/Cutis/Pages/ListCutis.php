@@ -17,13 +17,4 @@ class ListCutis extends ListRecords
             CreateAction::make(),
         ];
     }
-
-    /**
-     * Fix polling dengan defer loading untuk custom query
-     */
-    public function isTableDeferLoaded(): bool
-    {
-        return false; // Disable defer loading agar polling berfungsi dengan custom query
-    }
-
 }
