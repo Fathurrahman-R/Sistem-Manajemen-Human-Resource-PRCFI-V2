@@ -37,6 +37,7 @@ class CutisTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->recordTitleAttribute('keterangan')
             ->poll('10s')
             ->columns([
                 Split::make([
@@ -84,13 +85,13 @@ class CutisTable
                     ->options(StatusPengajuan::class)
                     ->attribute('status'),
             ])
-            ->filtersLayout(FiltersLayout::AboveContent)
+            ->filtersLayout(FiltersLayout::AboveContentCollapsible)
             ->recordActions([
                 // Aksi approve direktur
                 Action::make('Approve')
                     ->color(fn($record)=>match ($record->status) {
                         default=>'gray',
-                        StatusPengajuan::MenungguDirektur->value=>'primary',
+                        StatusPengajuan::MenungguDirektur=>'primary',
                     })
                     ->disabled(fn($record)=>$record->status!==StatusPengajuan::MenungguDirektur)
                     ->button()
