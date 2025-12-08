@@ -64,7 +64,7 @@ class Cuti extends Model
     {
         return $this->belongsTo(Karyawan::class, 'karyawan_id', 'id');
     }
-    public function timesheet(): BelongsToMany
+    public function timesheets(): BelongsToMany
     {
         return $this->belongsToMany(Timesheet::class);
     }
