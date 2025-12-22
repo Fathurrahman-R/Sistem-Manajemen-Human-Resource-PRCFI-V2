@@ -2,7 +2,10 @@
 
 namespace App\Filament\Resources\Timesheets\Pages;
 
+use App\Filament\Resources\Timesheets\RelationManagers\CutiRelationManager;
 use App\Filament\Resources\Timesheets\RelationManagers\IsiTimesheetRelationManager;
+use App\Filament\Resources\Timesheets\RelationManagers\TimesheetAktifitasRelationManager;
+use App\Filament\Resources\Timesheets\RelationManagers\TimesheetKehadiranRelationManager;
 use App\Filament\Resources\Timesheets\TimesheetResource;
 use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
@@ -13,7 +16,10 @@ class ViewTimesheet extends ViewRecord
     protected function getAllRelationManagers(): array
     {
         return [
-            IsiTimesheetRelationManager::class
+            TimesheetKehadiranRelationManager::class,
+            TimesheetAktifitasRelationManager::class,
+//            IsiTimesheetRelationManager::class,
+            CutiRelationManager::class
         ];
     }
 

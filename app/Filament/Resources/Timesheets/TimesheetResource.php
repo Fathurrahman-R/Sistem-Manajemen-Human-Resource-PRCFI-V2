@@ -12,6 +12,8 @@ use App\Filament\Resources\Timesheets\Pages\ListTimesheets;
 use App\Filament\Resources\Timesheets\Pages\ViewTimesheet;
 use App\Filament\Resources\Timesheets\RelationManagers\CutiRelationManager;
 use App\Filament\Resources\Timesheets\RelationManagers\IsiTimesheetRelationManager;
+use App\Filament\Resources\Timesheets\RelationManagers\TimesheetAktifitasRelationManager;
+use App\Filament\Resources\Timesheets\RelationManagers\TimesheetKehadiranRelationManager;
 use App\Filament\Resources\Timesheets\Schemas\TimesheetForm;
 use App\Filament\Resources\Timesheets\Tables\TimesheetsTable;
 use App\Models\Timesheet;
@@ -44,7 +46,9 @@ class TimesheetResource extends Resource
     public static function getRelations(): array
     {
         return [
-            IsiTimesheetRelationManager::class,
+            TimesheetKehadiranRelationManager::class,
+            TimesheetAktifitasRelationManager::class,
+//            IsiTimesheetRelationManager::class,
             CutiRelationManager::class
         ];
     }

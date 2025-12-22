@@ -18,6 +18,7 @@ class TimesheetForm
 //                TextInput::make('karyawan.nama_lengkap')->readOnly(),
                 TextEntry::make('karyawan.nama_lengkap')->visible(fn($operation)=>$operation=='view'),
                 TextEntry::make('karyawan.posisi')->visible(fn($operation)=>$operation=='view'),
+                TextEntry::make('karyawan.unit_kerja')->visible(fn($operation)=>$operation=='view'),
                 DatePicker::make('tanggal')
                     ->displayFormat('F Y')
                     ->minDate(\Illuminate\Support\now()->endOfMonth())
