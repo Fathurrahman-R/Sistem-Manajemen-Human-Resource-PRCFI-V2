@@ -16,11 +16,14 @@ class IsiTimesheetForm
         return $schema
             ->components([
                 ToggleButtons::make('location')->options(Location::class)->inline(),
-                DatePicker::make('tanggal')->label(__('Date'))
+                DatePicker::make('tanggal')
+                    ->displayFormat('d F Y')
+                    ->label(__('Date'))
+                    ->default(now())
                     ->native(false),
                 ToggleButtons::make('jam_bekerja')->options([8=>'Satu hari',4=>'Setengah hari']),
                 TextInput::make('place'),
                 TextInput::make('work_done')
-            ]);
+            ])->columns(1);
     }
 }
