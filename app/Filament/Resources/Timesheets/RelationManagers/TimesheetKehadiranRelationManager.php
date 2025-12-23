@@ -47,7 +47,7 @@ class TimesheetKehadiranRelationManager extends RelationManager
                 TextColumn::make('location'),
                 TextColumn::make('tanggal')
                     ->label('Date')
-                    ->date('d'),
+                    ->date('D, d F Y'),
                 TextColumn::make('jam_bekerja')
                     ->summarize([
                         Sum::make()
