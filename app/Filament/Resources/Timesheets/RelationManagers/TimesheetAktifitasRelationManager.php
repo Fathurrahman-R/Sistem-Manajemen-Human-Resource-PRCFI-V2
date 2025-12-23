@@ -46,7 +46,7 @@ class TimesheetAktifitasRelationManager extends RelationManager
                 // Kolom untuk aktifitas
                 TextColumn::make('tanggal_aktifitas')
                     ->state(fn($record)=>$record->tanggal)
-                    ->date('d F Y'),
+                    ->date('D, d F Y'),
                 TextColumn::make('day_worked')
                     ->label('day worked')
                     ->state(fn ($record) => $this->mapJamKeHari($record->jam_bekerja))
@@ -57,7 +57,10 @@ class TimesheetAktifitasRelationManager extends RelationManager
                                 'SUM(CASE WHEN jam_bekerja >= 8 THEN 1 WHEN jam_bekerja = 4 THEN 0.5 ELSE 0 END) as total'
                             )->value('total'))
                     ),
-                TextColumn::make('place'),
+                TextColumn::make('place')
+                    ->default(function ($record){
+                        return !is_null($record->place)?:'-';
+                    }),
                 TextColumn::make('work_done'),
             ])
             ->filters([
