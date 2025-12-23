@@ -299,7 +299,7 @@ class CutiRelationManager extends RelationManager
                                     ->limit(50)
                                     ->get()
                                     ->mapWithKeys(function ($record) {
-                                        $tgl = optional($record->tanggal_dibuat)?->format('d F Y');
+                                        $tgl = optional($record->tanggal_mulai)?->format('d F Y');
                                         $ket = trim((string) $record->keterangan);
                                         return [$record->id => "{$tgl} - {$ket}"];
                                     })
@@ -315,7 +315,7 @@ class CutiRelationManager extends RelationManager
                                     return null;
                                 }
 
-                                $tgl = optional($record->tanggal_dibuat)?->format('d F Y');
+                                $tgl = optional($record->tanggal_mulai)?->format('d F Y');
                                 $ket = trim((string) $record->keterangan);
                                 return "{$tgl} - {$ket}";
                             });
