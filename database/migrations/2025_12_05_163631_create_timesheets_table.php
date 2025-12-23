@@ -35,7 +35,7 @@ return new class extends Migration
         });
 
         Schema::create('timesheet_cuti', function (Blueprint $table) {
-            $table->foreignId('timesheet_id')->nullable()->constrained('m_karyawan')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('timesheet_id')->nullable()->constrained('d_timesheet')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('cuti_id')->nullable()->constrained('d_cuti')->cascadeOnDelete()->cascadeOnUpdate();
         });
     }
