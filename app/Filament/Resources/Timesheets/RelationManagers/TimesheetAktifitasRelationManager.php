@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Timesheets\RelationManagers;
 
 use App\Enum\Timesheet\Location;
 use App\Filament\Schemas\IsiTimesheetForm;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\AssociateAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
@@ -49,7 +50,7 @@ class TimesheetAktifitasRelationManager extends RelationManager
                     ->date('D, d F Y'),
                 TextColumn::make('day_worked')
                     ->label('day worked')
-                    ->state(fn ($record) => $this->mapJamKeHari($record->jam_bekerja))
+                    ->state(fn ($record) => $this->mapJamKeHari($record->jam_bekerja). ' hari')
                     ->summarize(
                         Summarizer::make()
                             ->label('Total Hari Bekerja')
@@ -71,29 +72,30 @@ class TimesheetAktifitasRelationManager extends RelationManager
 //                AssociateAction::make(),
             ])
             ->recordActions([
-                EditAction::make()
-                    ->disabled(function ($record) {
-                        return $record->location==Location::Leave || $record->location==Location::SickLeave;
-                    }),
-//                DissociateAction::make(),
-                DeleteAction::make()
-                    ->disabled(function ($record) {
-                        return $record->location==Location::Leave || $record->location==Location::SickLeave;
-                    }),
+                ActionGroup::make([
+                    EditAction::make()
+                        ->disabled(function ($record) {
+                            return $record->location==Location::Leave || $record->location==Location::SickLeave;
+                        })->label('')->color('gray'),
+                    DeleteAction::make()
+                        ->disabled(function ($record) {
+                            return $record->location==Location::Leave || $record->location==Location::SickLeave;
+                        })->label('')->color('danger'),
+                ])->buttonGroup()
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
 //                    DissociateBulkAction::make(),
                     DeleteBulkAction::make(),
                 ]),
-            ])
-            ->groups([
-                Group::make('location')
-                    ->titlePrefixedWithLabel(false)
-                    ->collapsible(),
-            ])
-            ->groupingSettingsHidden()
-            ->defaultGroup('location');
+            ]);
+//            ->groups([
+//                Group::make('location')
+//                    ->titlePrefixedWithLabel(false)
+//                    ->collapsible(),
+//            ])
+//            ->groupingSettingsHidden()
+//            ->defaultGroup('location');
     }
     protected function mapJamKeHari(int|float|null $jam): float
     {
