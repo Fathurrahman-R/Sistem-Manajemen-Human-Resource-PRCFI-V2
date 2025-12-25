@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Timesheets\RelationManagers;
 
 use App\Enum\Timesheet\Location;
 use App\Filament\Schemas\IsiTimesheetForm;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\AssociateAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
@@ -44,11 +45,12 @@ class TimesheetKehadiranRelationManager extends RelationManager
             ->paginated(false)
             ->columns([
                 // Kolom untuk kehadiran
-                TextColumn::make('location'),
+//                TextColumn::make('location'),
                 TextColumn::make('tanggal')
                     ->label('Date')
                     ->date('D, d F Y'),
                 TextColumn::make('jam_bekerja')
+                    ->state(fn($record)=>$record->jam_bekerja.' jam')
                     ->summarize([
                         Sum::make()
                             ->label('Total Jam Bekerja'),
@@ -62,15 +64,16 @@ class TimesheetKehadiranRelationManager extends RelationManager
 //                AssociateAction::make(),
             ])
             ->recordActions([
-                EditAction::make()
-                    ->disabled(function ($record) {
-                        return $record->location==Location::Leave || $record->location==Location::SickLeave;
-                    }),
-//                DissociateAction::make(),
-                DeleteAction::make()
-                    ->disabled(function ($record) {
-                        return $record->location==Location::Leave || $record->location==Location::SickLeave;
-                    }),
+                ActionGroup::make([
+                    EditAction::make()
+                        ->disabled(function ($record) {
+                            return $record->location==Location::Leave || $record->location==Location::SickLeave;
+                        })->label('')->color('gray'),
+                    DeleteAction::make()
+                        ->disabled(function ($record) {
+                            return $record->location==Location::Leave || $record->location==Location::SickLeave;
+                        })->label('')->color('danger'),
+                ])->buttonGroup()
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
