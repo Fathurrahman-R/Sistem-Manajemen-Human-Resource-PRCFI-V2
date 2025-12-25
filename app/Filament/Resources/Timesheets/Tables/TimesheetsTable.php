@@ -43,6 +43,7 @@ class TimesheetsTable
                     ->size(TextSize::Large)
                     ->badge(),
             ])->defaultGroup(\Filament\Tables\Grouping\Group::make('tanggal')
+                ->titlePrefixedWithLabel(false)
                 ->groupQueryUsing(fn(Builder $q)=>$q->select(DB::raw('MONTHNAME(tanggal) as bulan'), DB::raw('YEAR(tanggal) as tahun'))
                     ->groupBy('bulan')
                     ->groupBy('tahun'))->date())
