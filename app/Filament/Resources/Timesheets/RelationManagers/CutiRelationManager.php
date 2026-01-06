@@ -36,6 +36,7 @@ use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
@@ -240,8 +241,11 @@ class CutiRelationManager extends RelationManager
                             ->size(TextSize::Large)
                             ->weight(FontWeight::Bold),
                         TextColumn::make('tempat_dibuat')
+                            ->icon(Heroicon::MapPin)
                             ->searchable(),
                         TextColumn::make('tanggal_dibuat')
+                            ->icon(Heroicon::Calendar)
+                            ->sortable()
                             ->date('d F Y'),
                     ]),
                     \Filament\Tables\Columns\Layout\Grid::make(2)->schema([
@@ -270,6 +274,12 @@ class CutiRelationManager extends RelationManager
                 ]),
             ])
             ->striped()
+            ->groups([
+                Group::make('karyawan.nama_lengkap')
+                    ->collapsible()
+                    ->titlePrefixedWithLabel(false)
+            ])
+            ->groupingSettingsHidden()
             ->defaultGroup('karyawan.nama_lengkap')
             ->searchable()
             ->filters([
@@ -278,7 +288,7 @@ class CutiRelationManager extends RelationManager
                     ->options(StatusPengajuan::class)
                     ->attribute('status'),
             ])
-            ->filtersLayout(FiltersLayout::AboveContentCollapsible)
+            ->filtersLayout(FiltersLayout::Dropdown)
             ->headerActions([
                 AttachAction::make()
 //                    ->recordSelectOptionsQuery(fn (Builder $query) => $query->where('karyawan_id',Auth::user()->karyawan_id)->where('status', StatusPengajuan::Disetujui))
