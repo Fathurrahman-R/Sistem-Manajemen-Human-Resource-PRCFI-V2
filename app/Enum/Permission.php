@@ -2,7 +2,10 @@
 
 namespace App\Enum;
 
-enum Permission:string
+use Filament\Support\Colors\Color;
+use Filament\Support\Contracts\HasColor;
+
+enum Permission:string implements HasColor
 {
     // User
     case VIEW_MANAGE_USERS = 'lihat_manajemen_pengguna';
@@ -51,4 +54,60 @@ enum Permission:string
     case CREATE_MANAGE_ISI_TIMESHEET = 'tambah_manajemen_isi_timesheet';
     case EDIT_MANAGE_ISI_TIMESHEET = 'ubah_manajemen_isi_timesheet';
     case DELETE_MANAGE_ISI_TIMESHEET = 'hapus_manajemen_isi_timesheet';
+
+    public function getColor(): string|array|null
+    {
+        return match ($this) {
+
+            // Superadmin only permission
+            self::VIEW_MANAGE_USERS,
+            self::CREATE_MANAGE_USERS,
+            self::EDIT_MANAGE_USERS,
+            self::DELETE_MANAGE_USERS,
+
+            self::VIEW_MANAGE_ROLE,
+            self::CREATE_MANAGE_ROLE,
+            self::EDIT_MANAGE_ROLE,
+            self::DELETE_MANAGE_ROLE => Color::hex('#E11D48'),
+
+            // Data management permission
+            self::VIEW_MANAGE_KARYAWAN,
+            self::CREATE_MANAGE_KARYAWAN,
+            self::EDIT_MANAGE_KARYAWAN,
+            self::DELETE_MANAGE_KARYAWAN,
+
+            self::VIEW_MANAGE_PROGRAM,
+            self::CREATE_MANAGE_PROGRAM,
+            self::EDIT_MANAGE_PROGRAM,
+            self::DELETE_MANAGE_PROGRAM => Color::hex('#0F766E'),
+
+            // Document management permission
+            self::VIEW_MANAGE_CUTI,
+            self::CREATE_MANAGE_CUTI,
+            self::EDIT_MANAGE_CUTI,
+            self::DELETE_MANAGE_CUTI,
+
+            self::VIEW_MANAGE_TIMESHEET,
+            self::CREATE_MANAGE_TIMESHEET,
+            self::EDIT_MANAGE_TIMESHEET,
+            self::DELETE_MANAGE_TIMESHEET => Color::hex('#10B981'),
+
+            // Control permission
+            self::DIRECT_MANAGE_CUTI,
+            self::APPROVE_MANAGE_CUTI,
+            self::REJECT_MANAGE_CUTI,
+
+            self::DIRECT_MANAGE_TIMESHEET,
+            self::APPROVE_MANAGE_TIMESHEET,
+            self::REJECT_MANAGE_TIMESHEET => Color::hex('#FACC15'),
+
+            // Personal data permission
+            self::VIEW_MANAGE_ISI_TIMESHEET,
+            self::CREATE_MANAGE_ISI_TIMESHEET,
+            self::EDIT_MANAGE_ISI_TIMESHEET,
+            self::DELETE_MANAGE_ISI_TIMESHEET => Color::hex('#F97316'),
+
+            default => Color::Gray,
+        };
+    }
 }
