@@ -10,6 +10,8 @@ use App\Filament\Resources\Cutis\Pages\EditCuti;
 use App\Filament\Resources\Cutis\Pages\ListCutis;
 use App\Filament\Resources\Cutis\Schemas\CutiForm;
 use App\Filament\Resources\Cutis\Tables\CutisTable;
+use App\Filament\Resources\Cutis\Widgets\AllCuti;
+use App\Filament\Resources\Cutis\Widgets\CutiStats;
 use App\Models\Cuti;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -78,5 +80,10 @@ class CutiResource extends Resource
 
         return $query;
     }
-
+    public static function getWidgets(): array
+    {
+        return [
+            CutiStats::class
+        ];
+    }
 }

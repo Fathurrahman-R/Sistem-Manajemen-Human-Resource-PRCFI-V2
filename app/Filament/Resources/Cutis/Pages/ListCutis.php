@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Cutis\Pages;
 
 use App\Filament\Resources\Cutis\CutiResource;
+use App\Filament\Resources\Cutis\Widgets\CutiStats;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
@@ -15,6 +16,12 @@ class ListCutis extends ListRecords
     {
         return [
             CreateAction::make(),
+        ];
+    }
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            CutiStats::class
         ];
     }
 }
