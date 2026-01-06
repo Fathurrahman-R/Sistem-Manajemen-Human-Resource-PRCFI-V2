@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Users;
 
+use App\Enum\Colors;
 use App\Filament\Resources\Users\Pages\ManageUsers;
 use App\Models\User;
 use App\Permissions\Permission;
@@ -17,12 +18,15 @@ use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
+use Filament\Support\Colors\Color;
 use Filament\Support\Enums\FontWeight;
 use Filament\Support\Enums\TextSize;
 use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
@@ -60,13 +64,16 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('Daftar User')
-                    ->hiddenFrom('md')
-                    ->html()
-                    ->getStateUsing(fn ($record) => "<strong>{$record->name}</strong><br>{$record->email}<br><span class='fi-color fi-color-primary fi-text-color-600 dark:fi-text-color-200 fi-badge fi-size-sm'>{$record->roles->pluck('name')->first()}</span>")
-                    ->searchable(),
+//                TextColumn::make('Daftar User')
+//                    ->hiddenFrom('md')
+//                    ->html()
+//                    ->getStateUsing(fn ($record) => "<strong>{$record->name}</strong><br>{$record->email}<br><span class='fi-color fi-color-primary fi-text-color-600 dark:fi-text-color-200 fi-badge fi-size-sm'>{$record->roles->pluck('name')->first()}</span>")
+//                    ->searchable(),
+                ImageColumn::make('avatar_url')
+                    ->rounded()
+                    ->imageSize(50)
+                    ->disk('public'),
                 TextColumn::make('name')
-                    ->visibleFrom('md')
                     ->weight(FontWeight::Bold)
                     ->searchable(),
                 TextColumn::make('email')
@@ -76,29 +83,17 @@ class UserResource extends Resource
                     ->searchable(),
                 TextColumn::make('roles.name')
                     ->size(TextSize::Large)
-                    ->visibleFrom('md')
                     ->alignCenter()
                     ->label('Role')
-                    ->badge()
-                    ->color(fn($state):string => match ($state){
-                        \App\Enum\Role::SUPERADMIN->value => 'danger',
-                        \App\Enum\Role::ADMIN->value => 'warning',
-                        \App\Enum\Role::DIREKTUR->value => 'primary',
-                        \App\Enum\Role::KARYAWAN->value => 'success',
-                        default => 'gray'
-                    }),
+                    ->badge(),
+//                    ->color(function () {
+//                        $color = Arr::random(Colors::cases());
+//                        return $color->getColor();
+//                    }),
                 TextColumn::make('email_verified_at')
                     ->visibleFrom('md')
-                    ->dateTime()
+                    ->dateTime('d M Y H:i:s')
                     ->sortable(),
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //
@@ -116,10 +111,14 @@ class UserResource extends Resource
                             }
                             return $data;
                         })
+                        ->label('')
+                        ->color('gray')
                         ->visible(fn ($record):bool => !$record->hasRole(\App\Enum\Role::SUPERADMIN)),
                     DeleteAction::make()
+                        ->label('')
+                        ->color('danger')
                         ->visible(fn ($record):bool => !$record->hasRole(\App\Enum\Role::SUPERADMIN)),
-                ])
+                ])->buttonGroup()
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
