@@ -20,6 +20,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\View;
 use Filament\Support\Enums\FontWeight;
 use Filament\Support\Enums\TextSize;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\Layout\Grid;
 use Filament\Tables\Columns\Layout\Split;
 use Filament\Tables\Columns\Layout\Stack;
@@ -27,6 +28,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Enums\RecordActionsPosition;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -47,8 +49,11 @@ class CutisTable
                             ->size(TextSize::Large)
                             ->weight(FontWeight::Bold),
                         TextColumn::make('tempat_dibuat')
+                            ->icon(Heroicon::MapPin)
                             ->searchable(),
                         TextColumn::make('tanggal_dibuat')
+                            ->icon(Heroicon::Calendar)
+                            ->sortable()
                             ->date('d F Y'),
                     ]),
                     Grid::make(2)->schema([
@@ -77,6 +82,12 @@ class CutisTable
                 ]),
             ])
             ->striped()
+            ->groups([
+                Group::make('karyawan.nama_lengkap')
+                    ->collapsible()
+                    ->titlePrefixedWithLabel(false)
+            ])
+            ->groupingSettingsHidden()
             ->defaultGroup('karyawan.nama_lengkap')
             ->searchable()
             ->filters([
@@ -85,7 +96,7 @@ class CutisTable
                     ->options(StatusPengajuan::class)
                     ->attribute('status'),
             ])
-            ->filtersLayout(FiltersLayout::AboveContentCollapsible)
+            ->filtersLayout(FiltersLayout::Dropdown)
             ->recordActions([
                 // Aksi approve direktur
                 Action::make('Approve')
@@ -103,6 +114,8 @@ class CutisTable
                                 ->default('Pontianak')
                                 ->required(),
                             DatePicker::make('approved_date')
+                                ->minDate(now())
+                                ->maxDate(now())
                                 ->native(false)
                                 ->displayFormat('d F Y')
                                 ->label('Tanggal Disetujui')
@@ -110,10 +123,11 @@ class CutisTable
                                 ->required(),
                             Section::make('Tanda Tangan Direktur')->schema([
                                 Radio::make('signature_method')
+                                    ->label('Metode Tanda Tangan')
                                     ->live()
                                     ->options([
                                         'upload' => 'Upload PNG',
-                                        'draw' => 'Gambar Tanda Tangan',
+//                                        'draw' => 'Gambar Tanda Tangan',
                                     ])
                                     ->default('upload')
                                     ->inline()

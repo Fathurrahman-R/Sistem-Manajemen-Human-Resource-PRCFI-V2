@@ -19,6 +19,7 @@ use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Section;
+use Filament\Support\Enums\FontWeight;
 use Filament\Support\Enums\TextSize;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -34,10 +35,11 @@ class TimesheetsTable
         return $table
             ->columns([
                 TextColumn::make('karyawan.nama_lengkap')
-                    ->numeric()
+                    ->weight(FontWeight::SemiBold)
                     ->sortable(),
                 TextColumn::make('tanggal')
-                    ->date()
+                    ->label('Bulan')
+                    ->date('F Y')
                     ->sortable(),
                 TextColumn::make('status')
                     ->size(TextSize::Large)
@@ -46,7 +48,8 @@ class TimesheetsTable
                 ->titlePrefixedWithLabel(false)
                 ->groupQueryUsing(fn(Builder $q)=>$q->select(DB::raw('MONTHNAME(tanggal) as bulan'), DB::raw('YEAR(tanggal) as tahun'))
                     ->groupBy('bulan')
-                    ->groupBy('tahun'))->date())
+                    ->groupBy('tahun'))
+                ->date())
             ->filters([
                 //
             ])
