@@ -11,6 +11,7 @@ use Filament\Auth\MultiFactor\App\Contracts\HasAppAuthenticationRecovery;
 use Filament\Auth\MultiFactor\Email\Contracts\HasEmailAuthentication;
 use Filament\Auth\Pages\EmailVerification\EmailVerificationPrompt;
 use Filament\Models\Contracts\FilamentUser;
+use Filament\Models\Contracts\HasAvatar;
 use Filament\Panel;
 use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -20,10 +21,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Traits\HasRoles;
 
 #[UsePolicy(UserPolicy::class)]
-class User extends Authenticatable implements MustVerifyEmail, canResetPassword, HasEmailAuthentication, HasAppAuthentication, FilamentUser, HasAppAuthenticationRecovery
+class User extends Authenticatable implements MustVerifyEmail, canResetPassword, HasEmailAuthentication, HasAppAuthentication, FilamentUser, HasAppAuthenticationRecovery, HasAvatar
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasRoles;
@@ -39,6 +41,7 @@ class User extends Authenticatable implements MustVerifyEmail, canResetPassword,
         'karyawan_id',
         'password',
         'email_verified_at',
+        'avatar_url'
     ];
 
     /**
@@ -146,5 +149,11 @@ class User extends Authenticatable implements MustVerifyEmail, canResetPassword,
 
         $this->app_authentication_recovery_codes = $codes;
         $this->save();
+    }
+
+    public function getFilamentAvatarUrl(): ?string
+    {
+        return $this->avatar_url? Storage::disk('public')->url($this->avatar_url)
+            : null;
     }
 }

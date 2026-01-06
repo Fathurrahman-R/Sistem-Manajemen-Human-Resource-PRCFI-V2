@@ -2,6 +2,8 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\Auth\EditProfile;
+use App\Filament\Resources\Cutis\Widgets\CutiStats;
 use Filament\Auth\MultiFactor\App\AppAuthentication;
 use Filament\Auth\MultiFactor\Email\EmailAuthentication;
 use Filament\Http\Middleware\Authenticate;
@@ -35,7 +37,8 @@ class DashboardPanelProvider extends PanelProvider
             ->passwordReset()
             ->emailVerification()
             ->requiresEmailVerification()
-            ->profile()
+            ->profile(page: EditProfile::class)
+            ->userMenu()
             ->sidebarCollapsibleOnDesktop()
             ->colors([
                 'primary' => Color::Indigo,
