@@ -7,6 +7,7 @@ use App\Enum\Master\RiwayatPendidikan;
 use App\Enum\Master\StatusKerja;
 use App\Filament\Resources\Master\Karyawans\RelationManagers\ProgramRelationManager;
 use App\Filament\Tables\ProgramTabelResource;
+use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\ModalTableSelect;
@@ -39,6 +40,8 @@ class KaryawanForm
                                     ->placeholder('012.345.678.9-876.543')
                                     ->required(),
                                 TextInput::make('nama_lengkap')
+                                    ->minLength(3)
+                                    ->maxLength(100)
                                     ->prefixIcon(Heroicon::Identification)
                                     ->placeholder('John Doe')
                                     ->required(),
@@ -49,18 +52,25 @@ class KaryawanForm
                                     ->prefixIcon(Heroicon::Envelope)
                                     ->label('Alamat email')
                                     ->placeholder('myemail@example.com')
+                                    ->maxLength(100)
                                     ->email()
                                     ->required(),
                                 TextInput::make('unit_kerja')
+                                    ->minLength(3)
+                                    ->maxLength(100)
                                     ->prefixIcon(Heroicon::Map)
                                     ->placeholder('Pontianak')
                                     ->required(),
                                 TextInput::make('posisi')
+                                    ->minLength(2)
+                                    ->maxLength(100)
                                     ->prefixIcon(Heroicon::ShieldCheck)
                                     ->placeholder('Direktur')
                                     ->required(),
                                 FusedGroup::make([
                                     TextInput::make('tempat_lahir')
+                                        ->minLength(3)
+                                        ->maxLength(100)
                                         ->prefixIcon(Heroicon::MapPin)
                                         ->placeholder('Jakarta')
                                         ->required()->columnSpan(2),
@@ -68,18 +78,25 @@ class KaryawanForm
                                         ->prefixIcon(Heroicon::Calendar)
                                         ->native(false)
                                         ->closeOnDateSelection()
+                                        ->minDate(now()->subYears(90)->startOfDay())
+                                        ->maxDate(now()->subYears(15)->startOfDay())
                                         ->displayFormat('d F Y')
-                                        ->placeholder(date('M d, Y'))
+                                        ->default(now()->subYears(25)->startOfDay())
+                                        ->placeholder(now()->subYears(25)->startOfDay()->format('d F Y'))
                                         ->required(),
                                 ])->label('Tempat/Tanggal Lahir')->columns(3)->columnSpan(2),
                                 TextInput::make('pengalaman_kerja')
                                     ->prefixIcon(Heroicon::ArrowTrendingUp)
                                     ->suffix('Tahun')
                                     ->numeric()
+                                    ->minValue(0)
+                                    ->maxValue(90)
                                     ->default(0),
                                 FusedGroup::make([
                                     TextInput::make('institusi_pendidikan')
                                         ->prefixIcon(Heroicon::AcademicCap)
+                                        ->minLength(3)
+                                        ->maxLength(100)
                                         ->placeholder('Universitas Tanjungpura')
                                         ->columnSpan(2),
                                     Select::make('riwayat_pendidikan')
@@ -92,41 +109,51 @@ class KaryawanForm
                                     ->prefixIcon(Heroicon::CalendarDateRange)
                                     ->suffix('Tahun')
                                     ->numeric()
+                                    ->minValue(0)
+                                    ->maxValue(90)
                                     ->default(0),
                                 FusedGroup::make([
                                     Select::make('status')
                                         ->native(false)
-                                        ->default(StatusKerja::Kontrak->value)
+                                        ->default(StatusKerja::Kontrak)
                                         ->live()
-                                        ->options([
-                                            StatusKerja::Kontrak->name => StatusKerja::Kontrak->value,
-                                            StatusKerja::Tetap->name => StatusKerja::Tetap->value,
-                                            StatusKerja::Resign->name => StatusKerja::Resign->value,
-                                        ])
+                                        ->options(StatusKerja::class)
                                         ->required(),
                                     DatePicker::make('tanggal_bergabung')
                                         ->prefix('Bergabung')
                                         ->native(false)
                                         ->closeOnDateSelection()
                                         ->date()
+                                        ->minDate(now()->subYears(90)->startOfDay())
+                                        ->maxDate(now()->startOfDay())
+                                        ->default(now()->startOfDay())
                                         ->displayFormat('d F Y')
-                                        ->placeholder(date('d F Y'))
+                                        ->placeholder(now()->subYears(10)->format('d F Y'))
                                         ->required()->columnSpan(2),
                                     DatePicker::make('tanggal_expired')
                                         ->prefix('-')
                                         ->suffix('Expired')
                                         ->closeOnDateSelection()
                                         ->date()
+                                        ->minDate(now()->subYears(90)->startOfDay())
+                                        ->maxDate(now()->addYears(90)->startOfDay())
+                                        ->default(now()->addYears(1)->startOfDay())
                                         ->displayFormat('d F Y')
-                                        ->placeholder(date('d F Y'))
+                                        ->placeholder(now()->format('d F Y'))
                                         ->hidden(function (Get $get):bool{
-                                            return $get('status') === StatusKerja::Tetap->value;
-                                        })->native(false)->columnSpan(2),
-                                ])->columns(5)->columnSpan(2)->label('Status'),
+                                            return $get('status') === StatusKerja::Tetap;
+                                        })
+                                        ->native(false)
+                                        ->columnSpan(2),
+                                ])
+                                    ->columns(5)
+                                    ->columnSpan(2)
+                                    ->label('Status'),
                                 ToggleButtons::make('english_skill')
                                     ->required()
-                                    ->default(EnglishSkill::Low)
-                                    ->options(EnglishSkill::class)->inline(),
+//                                    ->default(EnglishSkill::Low)
+                                    ->options(EnglishSkill::class)
+                                    ->inline(),
                             ])->columns(3),
                         Section::make('Dokumen')
                             ->secondary()

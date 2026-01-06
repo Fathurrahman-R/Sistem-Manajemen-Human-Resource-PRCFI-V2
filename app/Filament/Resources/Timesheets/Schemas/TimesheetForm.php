@@ -20,6 +20,7 @@ class TimesheetForm
                 TextEntry::make('karyawan.posisi')->visible(fn($operation)=>$operation=='view'),
                 TextEntry::make('karyawan.unit_kerja')->visible(fn($operation)=>$operation=='view'),
                 DatePicker::make('tanggal')
+                    ->readOnly(fn($operation)=>$operation=='view'||$operation=='edit')
                     ->displayFormat('F Y')
                     ->minDate(\Illuminate\Support\now()->endOfMonth())
                     ->maxDate(\Illuminate\Support\now()->endOfMonth())

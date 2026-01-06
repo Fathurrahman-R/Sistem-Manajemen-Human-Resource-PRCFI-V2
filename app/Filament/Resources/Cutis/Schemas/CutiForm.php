@@ -42,6 +42,8 @@ class CutiForm
                                     return false;
                                 }
                             })
+                            ->minLength(3)
+                            ->maxLength(100)
                             ->placeholder('Pontianak')
                             ->prefixIcon(Heroicon::MapPin)
                             ->required(),
@@ -56,6 +58,9 @@ class CutiForm
                                     return false;
                                 }
                             })
+                            ->minDate(now()->startOfDay())
+                            ->maxDate(now()->endOfDay())
+                            ->closeOnDateSelection()
                             ->displayFormat('d F Y')
                             ->placeholder(date('d F Y'))
                             ->prefixIcon(Heroicon::Calendar)
@@ -74,10 +79,12 @@ class CutiForm
                                     return false;
                                 }
                             })
+                            ->minDate(now())
+                            ->closeOnDateSelection()
                             ->prefixIcon(Heroicon::CalendarDateRange)
-                            ->suffix('Sampai dengan')
+//                            ->suffix('Sampai dengan')
                             ->displayFormat('d F Y')
-                            ->placeholder(date('d F Y'))
+                            ->placeholder("Tanggal cuti dimulai")
                             ->native(false)
                             ->required(),
                         DatePicker::make('tanggal_selesai')
@@ -91,9 +98,11 @@ class CutiForm
                                     return false;
                                 }
                             })
+                            ->minDate(now())
+                            ->closeOnDateSelection()
                             ->prefixIcon(Heroicon::CalendarDateRange)
                             ->displayFormat('d F Y')
-                            ->placeholder(date('d F Y'))
+                            ->placeholder("Tanggal cuti berakhir")
                             ->native(false)
                             ->required(),
                     ])
@@ -109,10 +118,9 @@ class CutiForm
                                 return false;
                             }
                         })
+                        ->placeholder("Sertakan alasan cuti disini.")
                         ->required()
                         ->columnSpanFull(),
-                ]),
-                Section::make([
                     FileUpload::make('lampiran')
                         ->label('Lampiran (Opsional)')
                         ->helperText('Upload lampiran seperti surat keterangan dokter, dll.')
@@ -146,7 +154,8 @@ class CutiForm
                             }
                         })
                         ->columnSpanFull(),
-
+                ]),
+                Section::make([
                     Section::make('Tanda Tangan Pemohon')
                         ->description('Sertakan tanda tangan Anda pada surat pengajuan')
                         ->schema([
@@ -155,17 +164,17 @@ class CutiForm
                                 ->live()
                                 ->options([
                                     'upload' => 'Upload File PNG',
-                                    'draw' => 'Gambar Tanda Tangan',
+//                                    'draw' => 'Gambar Tanda Tangan',
                                 ])
                                 ->default('upload')
+                                ->required(fn (callable $get, $operation) => $get('signature_method') === 'upload'&&$operation==='create')
                                 ->inline()
-                                ->required()
                                 ->disabled(function($record,$operation){
                                     if($operation!=='create'){
                                         if ($record->status!==StatusPengajuan::Diajukan){
                                             return true;
                                         }
-                                        return false;
+                                        return true;
                                     }else{
                                         return false;
                                     }
@@ -181,14 +190,14 @@ class CutiForm
                                 ->directory('signatures')
                                 ->visibility('public')
                                 ->storeFileNamesIn('signature_png_name')
-                                ->required(fn (callable $get) => $get('signature_method') === 'upload')
+                                ->required(fn (callable $get, $operation) => $get('signature_method') === 'upload'&&$operation==='create')
                                 ->visible(fn (callable $get) => $get('signature_method') === 'upload')
                                 ->disabled(function($record,$operation){
                                     if($operation!=='create'){
                                         if ($record->status!==StatusPengajuan::Diajukan){
                                             return true;
                                         }
-                                        return false;
+                                        return true;
                                     }else{
                                         return false;
                                     }
