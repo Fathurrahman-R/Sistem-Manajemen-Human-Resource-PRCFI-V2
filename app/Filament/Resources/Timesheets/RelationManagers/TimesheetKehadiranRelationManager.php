@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Timesheets\RelationManagers;
 
+use App\Enum\Colors;
 use App\Enum\Timesheet\Location;
 use App\Filament\Schemas\IsiTimesheetForm;
 use Filament\Actions\ActionGroup;
@@ -18,6 +19,10 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
+use Filament\Support\Enums\FontWeight;
+use Filament\Support\Enums\TextSize;
+use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Columns\Summarizers\Count;
 use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -28,7 +33,7 @@ class TimesheetKehadiranRelationManager extends RelationManager
 {
     protected static string $relationship = 'isi_timesheet';
 
-    protected static ?string $relationshipTitle = 'Timesheet Kehadiran';
+    protected static ?string $relationshipTitle = 'Kehadiran';
 
     public function form(Schema $schema): Schema
     {
@@ -46,14 +51,29 @@ class TimesheetKehadiranRelationManager extends RelationManager
             ->columns([
                 // Kolom untuk kehadiran
 //                TextColumn::make('location'),
+                TextColumn::make('location')
+                    ->icon(Heroicon::MapPin)
+                    ->iconColor(Colors::Coral->getColor()),
                 TextColumn::make('tanggal')
                     ->label('Date')
-                    ->date('D, d F Y'),
+                    ->icon(Heroicon::Calendar)
+                    ->iconColor('primary')
+//                    ->color('primary')
+                    ->date('D, d F Y')
+                    ->summarize([
+                        Count::make()->label('')
+                            ->prefix('Total Hari: ')->suffix(' Hari')
+                    ]),
                 TextColumn::make('jam_bekerja')
-                    ->state(fn($record)=>$record->jam_bekerja.' jam')
+                    ->alignCenter()
+                    ->badge()
+                    ->size(TextSize::Large)
+//                    ->color('primary')
                     ->summarize([
                         Sum::make()
-                            ->label('Total Jam Bekerja'),
+                            ->label('')
+                            ->prefix('Total Jam: ')
+                            ->suffix(' Jam'),
                     ]),
             ])
             ->filters([
