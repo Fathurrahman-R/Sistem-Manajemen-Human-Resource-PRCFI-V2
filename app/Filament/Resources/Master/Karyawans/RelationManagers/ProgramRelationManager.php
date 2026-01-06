@@ -14,6 +14,8 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
+use Filament\Support\Enums\TextSize;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -26,20 +28,35 @@ class ProgramRelationManager extends RelationManager
         return $schema
             ->components([
                 TextInput::make('nama')
-                    ->unique()
-                    ->required()
-                    ->maxLength(100),
-                TextInput::make('lokasi')
+                    ->prefixIcon(Heroicon::Star)
+                    ->minLength(2)
                     ->maxLength(100)
+                    ->placeholder('Nama Program')
+                    ->required(),
+                TextInput::make('lokasi')
+                    ->prefixIcon(Heroicon::MapPin)
+                    ->minLength(3)
+                    ->maxLength(100)
+                    ->placeholder('Lokasi Pelaksanaan')
                     ->required(),
                 DatePicker::make('tanggal_mulai')
+                    ->prefixIcon(Heroicon::CalendarDateRange)
+                    ->closeOnDateSelection()
+                    ->minDate(now()->subYears(90)->startOfDay())
+                    ->maxDate(now()->addYears(5)->startOfDay())
+                    ->default(now())
+                    ->displayFormat('d F Y')
                     ->native(false)
-                    ->displayFormat('d M Y')
                     ->required(),
                 DatePicker::make('tanggal_selesai')
+                    ->prefixIcon(Heroicon::CalendarDateRange)
+                    ->closeOnDateSelection()
+                    ->minDate(now()->subYears(90)->startOfDay())
+                    ->maxDate(now()->addYears(10)->startOfDay())
+                    ->default(now()->addMonths(1)->startOfDay())
+                    ->displayFormat('d F Y')
                     ->native(false)
-                    ->displayFormat('d M Y')
-                    ->required()
+                    ->required(),
             ]);
     }
 
@@ -49,12 +66,20 @@ class ProgramRelationManager extends RelationManager
             ->recordTitleAttribute('nama')
             ->columns([
                 TextColumn::make('nama')
+                    ->badge()
+                    ->size(TextSize::Large)
                     ->searchable(),
-                TextColumn::make('lokasi'),
+                TextColumn::make('lokasi')
+                    ->visibleFrom('md')
+                    ->searchable(),
                 TextColumn::make('tanggal_mulai')
-                    ->date('d M Y'),
+                    ->visibleFrom('md')
+                    ->date('d F Y')
+                    ->sortable(),
                 TextColumn::make('tanggal_selesai')
-                    ->date('d M Y')
+                    ->visibleFrom('md')
+                    ->date('d F Y')
+                    ->sortable(),
             ])
             ->filters([
                 //
