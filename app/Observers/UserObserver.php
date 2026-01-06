@@ -5,6 +5,7 @@ namespace App\Observers;
 use App\Enum\Role;
 use App\Models\Master\Karyawan;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class UserObserver
@@ -26,5 +27,24 @@ class UserObserver
         }else{
             $user->assignRole(Role::KARYAWAN);
         }
+    }
+
+    public function updating(User $user): void
+    {
+        if (! $user->isDirty('email')) {
+            return;
+        }
+
+        $karyawan = Karyawan::find($user->karyawan_id);
+
+        if (! $karyawan) {
+            return;
+        }
+
+        DB::afterCommit(function () use ($user, $karyawan) {
+            $karyawan->fill([
+                'email' => $user->email,
+            ])->saveQuietly();
+        });
     }
 }

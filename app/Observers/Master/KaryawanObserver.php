@@ -24,17 +24,21 @@ class KaryawanObserver
         });
     }
 
-    public function updated(Karyawan $karyawan): void
+    public function updating(Karyawan $karyawan): void
     {
-        if ($karyawan->isDirty('email') || $karyawan->isDirty('nama_lengkap')) {
-            $user = User::where('email', $karyawan->getOriginal('email'))->first();
-
-            if ($user) {
-                $user->update([
-                    'name' => $karyawan->nama_lengkap,
-                    'email' => $karyawan->email,
-                ]);
-            }
+        if (! $karyawan->isDirty(['email', 'nama_lengkap'])) {
+            return;
         }
+
+        $user = User::where('karyawan_id', $karyawan->id)->first();
+
+        if (! $user) {
+            return;
+        }
+
+        $user->fill([
+            'name' => $karyawan->nama_lengkap,
+            'email' => $karyawan->email,
+        ])->saveQuietly();
     }
 }
