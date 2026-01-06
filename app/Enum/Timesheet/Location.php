@@ -22,4 +22,20 @@ enum Location: string implements HasLabel
     {
         return $this->value;
     }
+
+    public static function options(): array
+    {
+        return collect([
+            self::Pontianak,
+            self::KapuasHulu,
+            self::Sintang,
+            self::Travel,
+            self::Other,
+            self::Weekends
+        ])
+            ->mapWithKeys(fn ($case) => [
+            $case->value => $case->getLabel(),
+            ])
+            ->toArray();
+    }
 }
