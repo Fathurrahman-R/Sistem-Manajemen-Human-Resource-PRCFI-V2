@@ -2,8 +2,10 @@
 
 namespace App\Filament\Resources\Timesheets\RelationManagers;
 
+use App\Enum\Colors;
 use App\Enum\Timesheet\Location;
 use App\Filament\Schemas\IsiTimesheetForm;
+use Carbon\Carbon;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\AssociateAction;
 use Filament\Actions\BulkActionGroup;
@@ -18,6 +20,9 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
+use Filament\Support\Enums\FontWeight;
+use Filament\Support\Enums\TextSize;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\Summarizers\Summarizer;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -28,7 +33,7 @@ class TimesheetAktifitasRelationManager extends RelationManager
 {
     protected static string $relationship = 'isi_timesheet';
 
-    protected static ?string $relationshipTitle = 'Timesheet Aktifitas';
+    protected static ?string $relationshipTitle = 'Aktifitas';
 
     public function form(Schema $schema): Schema
     {
@@ -47,13 +52,22 @@ class TimesheetAktifitasRelationManager extends RelationManager
                 // Kolom untuk aktifitas
                 TextColumn::make('tanggal_aktifitas')
                     ->state(fn($record)=>$record->tanggal)
+                    ->icon(Heroicon::Calendar)
+                    ->iconColor('primary')
+//                    ->color('primary')
                     ->date('D, d F Y'),
                 TextColumn::make('day_worked')
+                    ->alignCenter()
                     ->label('day worked')
-                    ->state(fn ($record) => $this->mapJamKeHari($record->jam_bekerja). ' hari')
+                    ->badge()
+                    ->size(TextSize::Large)
+                    ->state(fn ($record) => $this->mapJamKeHari($record->jam_bekerja))
+//                    ->color('primary')
                     ->summarize(
                         Summarizer::make()
-                            ->label('Total Hari Bekerja')
+                            ->label('')
+                            ->prefix('Total Bekerja: ')
+                            ->suffix(' Hari')
                             ->using(fn ($query) => $query->selectRaw(
                                 'SUM(CASE WHEN jam_bekerja >= 8 THEN 1 WHEN jam_bekerja = 4 THEN 0.5 ELSE 0 END) as total'
                             )->value('total'))
@@ -61,8 +75,13 @@ class TimesheetAktifitasRelationManager extends RelationManager
                 TextColumn::make('place')
                     ->default(function ($record){
                         return !is_null($record->place)?:'-';
-                    }),
-                TextColumn::make('work_done'),
+                    })
+//                    ->color('primary')
+                    ->icon(Heroicon::MapPin)
+                    ->iconColor(Colors::Coral->getColor()),
+                TextColumn::make('work_done')
+                    ->alignCenter()
+                    ->weight(FontWeight::Medium)
             ])
             ->filters([
                 SelectFilter::make('location')->options(Location::class)->native(false)
