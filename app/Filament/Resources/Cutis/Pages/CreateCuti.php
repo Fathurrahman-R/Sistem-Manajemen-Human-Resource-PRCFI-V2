@@ -2,9 +2,11 @@
 
 namespace App\Filament\Resources\Cutis\Pages;
 
+use App\Enum\Permission;
 use App\Filament\Resources\Cutis\CutiResource;
 use App\Models\Cuti;
 use App\Models\User;
+use App\Notifications\Cuti\PengajuanCuti;
 use App\Services\CutiDocumentServiceNew;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
@@ -107,5 +109,11 @@ class CreateCuti extends CreateRecord
                 ->danger()
                 ->send();
         }
+
+        $users = User::permission(Permission::DIRECT_MANAGE_CUTI)->get();
+        \Illuminate\Support\Facades\Notification::send(
+            $users,
+            new PengajuanCuti('Ada pengajuan cuti baru')
+        );
     }
 }
