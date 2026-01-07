@@ -68,18 +68,18 @@ class CutiDocumentServiceNew
         $templateProcessor->setValue('unit_kerja', $cuti->karyawan->unit_kerja ?? '-');
         $templateProcessor->setValue('tempat_lahir', $cuti->karyawan->tempat_lahir ?? '-');
 
-        $tanggalLahir = $cuti->karyawan->tanggal_lahir ? $cuti->karyawan->tanggal_lahir->format('d F Y') : '-';
+        $tanggalLahir = $cuti->karyawan->tanggal_lahir ? $cuti->karyawan->tanggal_lahir->locale('id')->translatedFormat('d F Y') : '-';
         $templateProcessor->setValue('tanggal_lahir', $tanggalLahir);
         $templateProcessor->setValue('tanggal _lahir', $tanggalLahir); // dengan spasi
 
         $templateProcessor->setValue('tempat_dibuat', $cuti->tempat_dibuat);
 
-        $tanggalDibuat = $cuti->tanggal_dibuat->format('d F Y');
+        $tanggalDibuat = $cuti->tanggal_dibuat->locale('id')->translatedFormat('d F Y');
         $templateProcessor->setValue('tanggal_dibuat', $tanggalDibuat);
         $templateProcessor->setValue('tanggal_dibuat', $tanggalDibuat); // dengan spasi
 
-        $templateProcessor->setValue('tanggal_mulai', $cuti->tanggal_mulai->format('d F Y'));
-        $templateProcessor->setValue('tanggal_selesai', $cuti->tanggal_selesai->format('d F Y'));
+        $templateProcessor->setValue('tanggal_mulai', $cuti->tanggal_mulai->locale('id')->translatedFormat('d F Y'));
+        $templateProcessor->setValue('tanggal_selesai', $cuti->tanggal_selesai->locale('id')->translatedFormat('d F Y'));
 
         $lamaCuti = $cuti->tanggal_mulai->diffInDays($cuti->tanggal_selesai) + 1;
         $templateProcessor->setValue('lama_cuti', $lamaCuti . " hari ");
@@ -88,7 +88,7 @@ class CutiDocumentServiceNew
         $templateProcessor->setValue('jumlah_lampiran', $cuti->jumlah_lampiran !== 0 ? $cuti->jumlah_lampiran : '-');
 
 //        $templateProcessor->setValue('approved_at', $cuti->approved_at ?? '-');
-//        $templateProcessor->setValue('approved_date', $cuti->approved_date ? \Carbon\Carbon::parse($cuti->approved_date)->format('d F Y') : '-');
+//        $templateProcessor->setValue('approved_date', $cuti->approved_date ? \Carbon\Carbon::parse($cuti->approved_date)->locale('id')->translatedFormat('d F Y') : '-');
 //        $templateProcessor->setValue('approved_by', $cuti->approved_by ?? '-');
 
         // Handle signature karyawan dari database
@@ -206,7 +206,7 @@ class CutiDocumentServiceNew
 
         // Update approval info
         $templateProcessor->setValue('approved_at', $cuti->approved_at ?? '-');
-        $templateProcessor->setValue('approved_date', $cuti->approved_date ? \Carbon\Carbon::parse($cuti->approved_date)->format('d F Y') : '-');
+        $templateProcessor->setValue('approved_date', $cuti->approved_date ? \Carbon\Carbon::parse($cuti->approved_date)->locale('id')->translatedFormat('d F Y') : '-');
         $templateProcessor->setValue('approved_by', $cuti->approved_by ?? '-');
 
         // Handle signature direktur dari database

@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Cutis\Schemas;
 
 use App\Enum\Cuti\StatusPengajuan;
 use App\Models\User;
+use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Radio;
@@ -79,7 +80,8 @@ class CutiForm
                                     return false;
                                 }
                             })
-                            ->minDate(now())
+                            ->reactive()
+                            ->minDate(now()->addDay()->startOfDay())
                             ->closeOnDateSelection()
                             ->prefixIcon(Heroicon::CalendarDateRange)
 //                            ->suffix('Sampai dengan')
@@ -98,7 +100,9 @@ class CutiForm
                                     return false;
                                 }
                             })
-                            ->minDate(now())
+                            ->minDate(function ($get){
+                                return Carbon::parse($get('tanggal_mulai'))->addDay()->startOfDay();
+                            })
                             ->closeOnDateSelection()
                             ->prefixIcon(Heroicon::CalendarDateRange)
                             ->displayFormat('d F Y')
