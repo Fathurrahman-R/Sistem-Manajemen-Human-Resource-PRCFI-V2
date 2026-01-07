@@ -6,9 +6,8 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use Illuminate\Support\Facades\DB;
 
-class PengajuanCuti extends Notification
+class EmailStatusPengajuan extends Notification
 {
     use Queueable;
 
@@ -16,7 +15,8 @@ class PengajuanCuti extends Notification
      * Create a new notification instance.
      */
     public function __construct(
-        public string $karyawan
+        public ?string $status,
+        public ?string $message,
     )
     {
         //
@@ -37,13 +37,12 @@ class PengajuanCuti extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-        $posisi = DB::table('m_karyawan')->where('id', $notifiable->karyawan_id)->value('posisi');
-
         return (new MailMessage)
-            ->greeting("Yth. $posisi PRCFI Pontianak")
-            ->line("Karyawan bernama $this->karyawan baru saja mengajukan cuti, periksa dokumen dan ambil tindakan dengan menekan tombol dibawah. Terima Kasih.")
-            ->action('Periksa Cuti', url('/dashboard/cutis'))
-            ;
+            ->subject('Status Pengajuan')
+            ->greeting("Hai, $notifiable->name")
+            ->line("Cuti kamu $this->status $this->message.")
+            ->line("(pengajuan cuti tidak bisa diubah maupun dihapus setelah ditandai dilihat oleh yang berwenang)")
+            ->line('Terima Kasih!');
     }
 
     /**

@@ -8,7 +8,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\DB;
 
-class PengajuanCuti extends Notification
+class DirectedCuti extends Notification
 {
     use Queueable;
 
@@ -16,7 +16,7 @@ class PengajuanCuti extends Notification
      * Create a new notification instance.
      */
     public function __construct(
-        public string $karyawan
+        public string $karyawan,
     )
     {
         //
@@ -41,9 +41,8 @@ class PengajuanCuti extends Notification
 
         return (new MailMessage)
             ->greeting("Yth. $posisi PRCFI Pontianak")
-            ->line("Karyawan bernama $this->karyawan baru saja mengajukan cuti, periksa dokumen dan ambil tindakan dengan menekan tombol dibawah. Terima Kasih.")
-            ->action('Periksa Cuti', url('/dashboard/cutis'))
-            ;
+            ->line("Pengajuan cuti oleh $this->karyawan baru saja diteruskan dan sedang menunggu persetujuan anda, periksa sekarang dengan menekan tombol dibawah. Terima Kasih")
+            ->action('Periksa Cuti', url('/dashboard/cutis'));
     }
 
     /**
