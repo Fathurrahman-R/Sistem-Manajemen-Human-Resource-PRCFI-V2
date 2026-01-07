@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Timesheets\Pages;
 
 use App\Filament\Resources\Timesheets\TimesheetResource;
+use App\Filament\Resources\Timesheets\Widgets\TimesheetStats;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
@@ -17,4 +18,10 @@ class ListTimesheets extends ListRecords
         ];
     }
 
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            TimesheetStats::class
+        ];
+    }
 }

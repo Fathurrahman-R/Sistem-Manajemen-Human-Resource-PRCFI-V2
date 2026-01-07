@@ -16,6 +16,7 @@ use App\Filament\Resources\Timesheets\RelationManagers\TimesheetAktifitasRelatio
 use App\Filament\Resources\Timesheets\RelationManagers\TimesheetKehadiranRelationManager;
 use App\Filament\Resources\Timesheets\Schemas\TimesheetForm;
 use App\Filament\Resources\Timesheets\Tables\TimesheetsTable;
+use App\Filament\Resources\Timesheets\Widgets\TimesheetStats;
 use App\Models\Timesheet;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -86,5 +87,12 @@ class TimesheetResource extends Resource
         }
 
         return $query;
+    }
+
+    public static function getWidgets(): array
+    {
+        return[
+            TimesheetStats::class,
+        ];
     }
 }
