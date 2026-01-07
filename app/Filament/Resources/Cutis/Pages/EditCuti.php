@@ -4,14 +4,18 @@ namespace App\Filament\Resources\Cutis\Pages;
 
 use App\Enum\Cuti\StatusPengajuan;
 use App\Filament\Resources\Cutis\CutiResource;
+use App\Jobs\Cuti\EmailPengajuanKeAdmin;
+use App\Jobs\Cuti\EmailStatusPengajuan;
 use App\Models\Cuti;
 use App\Services\CutiDocumentServiceNew;
+use App\Services\EmailNotificationService;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class EditCuti extends EditRecord
@@ -55,6 +59,8 @@ class EditCuti extends EditRecord
 
     protected function afterSave(): void
     {
+        $record = $this->record;
+
         try {
             $documentService = app(CutiDocumentServiceNew::class);
             $documentPath = $documentService->generateAndSaveCutiDocument($this->record);
@@ -73,6 +79,8 @@ class EditCuti extends EditRecord
                 ->danger()
                 ->send();
         }
+        dispatch(new EmailStatusPengajuan(id: $record->karyawan_id));
+        dispatch(new EmailPengajuanKeAdmin($record->karyawan_id));
     }
 
     protected function getFormActions(): array

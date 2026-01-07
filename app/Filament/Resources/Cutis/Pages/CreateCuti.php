@@ -4,10 +4,13 @@ namespace App\Filament\Resources\Cutis\Pages;
 
 use App\Enum\Permission;
 use App\Filament\Resources\Cutis\CutiResource;
+use App\Jobs\Cuti\EmailPengajuanKeAdmin;
+use App\Jobs\Cuti\EmailStatusPengajuan;
 use App\Models\Cuti;
 use App\Models\User;
 use App\Notifications\Cuti\PengajuanCuti;
 use App\Services\CutiDocumentServiceNew;
+use App\Services\EmailNotificationService;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Auth;
@@ -109,11 +112,7 @@ class CreateCuti extends CreateRecord
                 ->danger()
                 ->send();
         }
-
-        $users = User::permission(Permission::DIRECT_MANAGE_CUTI)->get();
-        \Illuminate\Support\Facades\Notification::send(
-            $users,
-            new PengajuanCuti('Ada pengajuan cuti baru')
-        );
+        dispatch(new EmailStatusPengajuan(id: $record->karyawan_id));
+        dispatch(new EmailPengajuanKeAdmin($record->karyawan_id));
     }
 }

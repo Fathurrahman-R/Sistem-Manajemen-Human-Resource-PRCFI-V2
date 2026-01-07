@@ -3,9 +3,14 @@
 namespace App\Filament\Resources\Cutis\Tables;
 
 use App\Enum\Cuti\StatusPengajuan;
+use App\Jobs\Cuti\EmailDiteruskanKeDirektur;
+use App\Jobs\Cuti\EmailPengajuanKeAdmin;
+use App\Jobs\Cuti\EmailStatusPengajuan;
+use App\Jobs\EmailNotification;
 use App\Models\Cuti;
 use App\Permissions\Permission;
 use App\Services\CutiDocumentServiceNew;
+use App\Services\EmailNotificationService;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
@@ -114,8 +119,8 @@ class CutisTable
                                 ->default('Pontianak')
                                 ->required(),
                             DatePicker::make('approved_date')
-                                ->minDate(now())
-                                ->maxDate(now())
+                                ->minDate(now()->startOfDay())
+                                ->maxDate(now()->endOfDay())
                                 ->native(false)
                                 ->displayFormat('d F Y')
                                 ->label('Tanggal Disetujui')
@@ -220,7 +225,14 @@ class CutisTable
                     ->successNotificationTitle('Pengajuan cuti berhasil disetujui dan dokumen telah dibuat')
                     ->requiresConfirmation()
                     ->modalHeading('Approve Pengajuan Cuti')
-                    ->modalSubmitActionLabel('Konfirmasi'),
+                    ->modalSubmitActionLabel('Konfirmasi')
+                    ->after(function ($record){
+                        dispatch(new EmailStatusPengajuan(
+                            $record->karyawan_id,
+                            'telah Disetujui!',
+                            'Masuk ke aplikasi untuk mengunduh surat pengajuan cuti'
+                        ));
+                    }),
                 Action::make('Reject')
                     ->requiresConfirmation()
                     ->disabled(fn($record)=>$record->status!==StatusPengajuan::MenungguDirektur)
@@ -237,6 +249,13 @@ class CutisTable
                     ->successNotificationTitle('Pengajuan cuti berhasil ditolak dan dokumen dihapus')
                     ->modalDescription('Apakah Anda yakin ingin menolak pengajuan ini? Dokumen akan dihapus.')
                     ->button()
+                    ->after(function ($record) {
+                        dispatch(new EmailStatusPengajuan(
+                            $record->karyawan_id,
+                            'Ditolak,',
+                            'Hubungi pihak berwenang dan ajukan ulang cuti jika masih ingin mencoba'
+                        ));
+                    })
                     ->authorize('reject'),
                 Action::make('Teruskan')
                     ->color(fn($record)=>match ($record->status) {
@@ -248,6 +267,14 @@ class CutisTable
                     ->modalDescription('Apakah Anda yakin ingin melakukan ini? Aksi tidak bisa dibatalkan setelah menekan tombol konfirmasi')
                     ->disabled(fn($record)=>$record->status!==StatusPengajuan::MenungguHR)
                     ->action(fn(Cuti $record)=>$record->directTo(Auth::user()))
+                    ->after(function ($record) {
+                        dispatch(new EmailStatusPengajuan(
+                            $record->karyawan_id,
+                            'sudah diteruskan ke direktur untuk approval!',
+                            'Tunggu email selanjutnya untuk pembaruan status pengajuan'
+                        ));
+                        dispatch(new EmailDiteruskanKeDirektur($record->karyawan_id));
+                    })
                     ->button()
                     ->authorize('direct'),
                 Action::make('Diterima')
@@ -261,6 +288,13 @@ class CutisTable
                     })
                     ->action(fn(Cuti $record)=>$record->rechieved(Auth::user()))
                     ->button()
+                    ->after(function ($record) {
+                        dispatch(new EmailStatusPengajuan(
+                            $record->karyawan_id,
+                            "sudah dilihat dan ditandai sebagai diterima oleh yang berwenang!",
+                            "Pengajuan Cuti milik kamu akan diteruskan ke direktur untuk approval"
+                        ));
+                    })
                     ->authorize('direct'),
 
                 EditAction::make()

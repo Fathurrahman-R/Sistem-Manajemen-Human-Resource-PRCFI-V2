@@ -159,26 +159,16 @@ class CutiForm
                     Section::make('Tanda Tangan Pemohon')
                         ->description('Sertakan tanda tangan Anda pada surat pengajuan')
                         ->schema([
-                            Radio::make('signature_method')
-                                ->label('Metode Tanda Tangan')
-                                ->live()
-                                ->options([
-                                    'upload' => 'Upload File PNG',
-//                                    'draw' => 'Gambar Tanda Tangan',
-                                ])
-                                ->default('upload')
-                                ->required(fn (callable $get, $operation) => $get('signature_method') === 'upload'&&$operation==='create')
-                                ->inline()
-                                ->disabled(function($record,$operation){
-                                    if($operation!=='create'){
-                                        if ($record->status!==StatusPengajuan::Diajukan){
-                                            return true;
-                                        }
-                                        return true;
-                                    }else{
-                                        return false;
-                                    }
-                                }),
+//                            Radio::make('signature_method')
+//                                ->label('Metode Tanda Tangan')
+//                                ->live()
+//                                ->options([
+//                                    'upload' => 'Upload File PNG',
+////                                    'draw' => 'Gambar Tanda Tangan',
+//                                ])
+//                                ->default('upload')
+//                                ->required()
+//                                ->inline(),
 
                             FileUpload::make('signature_png')
                                 ->label('File PNG Tanda Tangan')
@@ -190,18 +180,8 @@ class CutiForm
                                 ->directory('signatures')
                                 ->visibility('public')
                                 ->storeFileNamesIn('signature_png_name')
-                                ->required(fn (callable $get, $operation) => $get('signature_method') === 'upload'&&$operation==='create')
-                                ->visible(fn (callable $get) => $get('signature_method') === 'upload')
-                                ->disabled(function($record,$operation){
-                                    if($operation!=='create'){
-                                        if ($record->status!==StatusPengajuan::Diajukan){
-                                            return true;
-                                        }
-                                        return true;
-                                    }else{
-                                        return false;
-                                    }
-                                }),
+                                ->required()
+                                ->visible(),
 
 //                            View::make('signature-wrapper')
 //                                ->visible(fn (callable $get) => $get('signature_method') === 'draw'),
